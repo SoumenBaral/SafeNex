@@ -33,7 +33,17 @@ Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('/api/districts/{district}/upazilas', fn (District $district) => $district->upazilas()->select('id', 'district_id', 'name', 'name_bn')->get())->name('api.upazilas');
 
 // User routes (auth)
-Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    $user = auth()->user();
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'total_reports' => $user->reports()->count(),
+            'pending' => $user->reports()->where('status', 'pending')->count(),
+            'verified' => $user->reports()->where('status', 'verified')->count(),
+            'rejected' => $user->reports()->where('status', 'rejected')->count(),
+        ],
+    ]);
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -52,7 +62,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Admin routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+    Route::get('/', function () {
+        return Inertia::render('Admin/Dashboard', [
+            'stats' => [
+                'pending_reports' => \App\Models\Report::where('status', 'pending')->count(),
+                'verified_reports' => \App\Models\Report::where('status', 'verified')->count(),
+                'total_reports' => \App\Models\Report::count(),
+                'total_users' => \App\Models\User::count(),
+                'total_teams' => \App\Models\RescueTeam::count(),
+                'published_news' => \App\Models\NewsArticle::where('status', 'published')->count(),
+            ],
+        ]);
+    })->name('dashboard');
 
     Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{report}', [AdminReportController::class, 'show'])->name('reports.show');

@@ -19,9 +19,11 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route('admin.news.update', props.article.id), {
-        forceFormData: true,
+    form.transform((data) => ({
+        ...data,
         _method: 'put',
+    })).post(route('admin.news.update', props.article.id), {
+        forceFormData: true,
     });
 }
 </script>
