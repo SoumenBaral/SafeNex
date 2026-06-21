@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\Admin\AlertController;
 use App\Http\Controllers\Admin\AssignmentController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\RescueTeamController;
 use App\Http\Controllers\LiveMapController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Responder\AssignmentController as ResponderAssignmentController;
+use App\Models\District;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,7 +26,11 @@ Route::get('/', fn () => Inertia::render('Welcome', [
 
 Route::get('/map', [LiveMapController::class, 'index'])->name('map');
 Route::get('/map/incidents.json', [LiveMapController::class, 'incidents'])->name('map.incidents');
-Route::get('/news', fn () => Inertia::render('Public/NewsIndex'))->name('news.index');
+Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
+
+// API: cascading upazilas
+Route::get('/api/districts/{district}/upazilas', fn (District $district) => $district->upazilas()->select('id', 'district_id', 'name', 'name_bn')->get())->name('api.upazilas');
 
 // User routes (auth)
 Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->middleware(['auth', 'verified'])->name('dashboard');
@@ -45,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Admin routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+
     Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{report}', [AdminReportController::class, 'show'])->name('reports.show');
     Route::post('/reports/{report}/verify', [AdminReportController::class, 'verify'])->name('reports.verify');
@@ -60,11 +69,19 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::get('/reports/{report}/assign', [AssignmentController::class, 'create'])->name('assignments.create');
     Route::post('/reports/{report}/assign', [AssignmentController::class, 'store'])->name('assignments.store');
+
+    Route::get('/news', [AdminNewsController::class, 'index'])->name('news.index');
+    Route::get('/news/create', [AdminNewsController::class, 'create'])->name('news.create');
+    Route::post('/news', [AdminNewsController::class, 'store'])->name('news.store');
+    Route::get('/news/{article}/edit', [AdminNewsController::class, 'edit'])->name('news.edit');
+    Route::put('/news/{article}', [AdminNewsController::class, 'update'])->name('news.update');
+    Route::delete('/news/{article}', [AdminNewsController::class, 'destroy'])->name('news.destroy');
 });
 
 // Responder routes
 Route::middleware(['auth', 'verified', 'role:responder'])->prefix('responder')->name('responder.')->group(function () {
-    Route::get('/', fn () => Inertia::render('Responder/Dashboard'))->name('dashboard');
+    Route::get('/', [ResponderAssignmentController::class, 'index'])->name('dashboard');
+    Route::post('/assignments/{assignment}/status', [ResponderAssignmentController::class, 'updateStatus'])->name('assignments.update-status');
 });
 
 require __DIR__.'/auth.php';

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\District;
 use App\Models\Report;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,10 +12,13 @@ use Inertia\Response;
 
 class LiveMapController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Public/Map', [
-            'incidents' => $this->getIncidents(),
+            'incidents' => $this->getIncidents($request),
+            'districts' => District::select('id', 'name')->orderBy('name')->get(),
+            'categories' => Category::select('id', 'name')->orderBy('name')->get(),
+            'filters' => $request->only('district_id', 'category_id'),
         ]);
     }
 
@@ -22,13 +27,13 @@ class LiveMapController extends Controller
         return response()->json($this->getIncidents($request));
     }
 
-    private function getIncidents(?Request $request = null): array
+    private function getIncidents(Request $request): array
     {
         return Report::where('status', 'verified')
             ->with('category:id,name,color', 'district:id,name', 'upazila:id,name')
             ->select('id', 'title', 'category_id', 'district_id', 'upazila_id', 'latitude', 'longitude', 'severity', 'created_at')
-            ->when($request?->district_id, fn ($q, $v) => $q->where('district_id', $v))
-            ->when($request?->category_id, fn ($q, $v) => $q->where('category_id', $v))
+            ->when($request->input('district_id'), fn ($q, $v) => $q->where('district_id', $v))
+            ->when($request->input('category_id'), fn ($q, $v) => $q->where('category_id', $v))
             ->latest()
             ->limit(500)
             ->get()

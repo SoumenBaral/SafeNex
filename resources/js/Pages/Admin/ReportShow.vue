@@ -75,10 +75,14 @@ const severityColors = {
                         </div>
 
                         <!-- Action Buttons -->
-                        <div v-if="report.status === 'verified'" class="flex-shrink-0">
+                        <div v-if="report.status === 'verified'" class="flex gap-2 flex-shrink-0">
                             <Link :href="route('admin.assignments.create', report.id)"
                                 class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-                                Assign Rescue Team
+                                Assign Team
+                            </Link>
+                            <Link :href="route('admin.news.create', { from_report: report.id })"
+                                class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500">
+                                Convert to Article
                             </Link>
                         </div>
                         <div v-if="report.status === 'pending'" class="flex gap-2 flex-shrink-0">

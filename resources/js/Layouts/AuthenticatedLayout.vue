@@ -49,6 +49,9 @@ const isResponder = computed(() => roles.value.includes('responder'));
                                     <NavLink :href="route('admin.alerts.index')" :active="route().current('admin.alerts.*')">
                                         Alerts
                                     </NavLink>
+                                    <NavLink :href="route('admin.news.index')" :active="route().current('admin.news.*')">
+                                        News
+                                    </NavLink>
                                 </template>
 
                                 <!-- Responder Nav -->
@@ -185,6 +188,7 @@ const isResponder = computed(() => roles.value.includes('responder'));
                             <ResponsiveNavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">Reports</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('admin.teams.index')" :active="route().current('admin.teams.*')">Teams</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('admin.alerts.index')" :active="route().current('admin.alerts.*')">Alerts</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('admin.news.index')" :active="route().current('admin.news.*')">News</ResponsiveNavLink>
                         </template>
                         <template v-else-if="isResponder">
                             <ResponsiveNavLink :href="route('responder.dashboard')" :active="route().current('responder.dashboard')">Dashboard</ResponsiveNavLink>
