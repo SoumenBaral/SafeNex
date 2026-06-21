@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\ReportVerified;
 use App\Http\Controllers\Controller;
 use App\Models\Report;
+use App\Notifications\ReportApproved;
+use App\Notifications\ReportRejected;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,7 +16,7 @@ class ReportController extends Controller
 {
     public function index(Request $request): Response
     {
-        $status = $request->get('status', 'pending');
+        $status = $request->input('status', 'pending');
 
         $reports = Report::with('user:id,name,email', 'category:id,name,slug,color', 'district:id,name', 'upazila:id,name')
             ->when($status !== 'all', fn ($q) => $q->where('status', $status))
@@ -44,6 +47,13 @@ class ReportController extends Controller
             'verified_at' => now(),
         ]);
 
+        // Broadcast to live map
+        $report->load('category:id,name,color', 'district:id,name', 'upazila:id,name');
+        event(new ReportVerified($report));
+
+        // Notify the reporter
+        $report->user->notify(new ReportApproved($report));
+
         return back()->with('success', 'Report verified and now visible publicly.');
     }
 
@@ -55,10 +65,13 @@ class ReportController extends Controller
 
         $report->update([
             'status' => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
+            'rejection_reason' => $request->input('rejection_reason'),
             'verified_by' => $request->user()->id,
             'verified_at' => now(),
         ]);
+
+        // Notify the reporter
+        $report->user->notify(new ReportRejected($report));
 
         return back()->with('success', 'Report rejected.');
     }

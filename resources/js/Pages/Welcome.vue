@@ -19,6 +19,7 @@ defineProps({
                         <span class="text-2xl font-bold text-indigo-600">Safenix</span>
                     </div>
                     <div class="flex items-center gap-4">
+                        <Link :href="route('map')" class="text-sm text-gray-600 hover:text-gray-900">Live Map</Link>
                         <Link :href="route('news.index')" class="text-sm text-gray-600 hover:text-gray-900">News</Link>
                         <template v-if="canLogin">
                             <Link v-if="$page.props.auth.user" :href="route('dashboard')"

@@ -5,6 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import NotificationBell from '@/Components/NotificationBell.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -42,6 +43,12 @@ const isResponder = computed(() => roles.value.includes('responder'));
                                     <NavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">
                                         Reports
                                     </NavLink>
+                                    <NavLink :href="route('admin.teams.index')" :active="route().current('admin.teams.*')">
+                                        Teams
+                                    </NavLink>
+                                    <NavLink :href="route('admin.alerts.index')" :active="route().current('admin.alerts.*')">
+                                        Alerts
+                                    </NavLink>
                                 </template>
 
                                 <!-- Responder Nav -->
@@ -64,6 +71,9 @@ const isResponder = computed(() => roles.value.includes('responder'));
                                     </NavLink>
                                 </template>
 
+                                <NavLink :href="route('map')" :active="route().current('map')">
+                                    Live Map
+                                </NavLink>
                                 <NavLink :href="route('news.index')" :active="route().current('news.*')">
                                     News
                                 </NavLink>
@@ -71,6 +81,8 @@ const isResponder = computed(() => roles.value.includes('responder'));
                         </div>
 
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
+                            <NotificationBell />
+
                             <!-- Settings Dropdown -->
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
@@ -171,6 +183,8 @@ const isResponder = computed(() => roles.value.includes('responder'));
                         <template v-if="isAdmin">
                             <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">Dashboard</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">Reports</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('admin.teams.index')" :active="route().current('admin.teams.*')">Teams</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('admin.alerts.index')" :active="route().current('admin.alerts.*')">Alerts</ResponsiveNavLink>
                         </template>
                         <template v-else-if="isResponder">
                             <ResponsiveNavLink :href="route('responder.dashboard')" :active="route().current('responder.dashboard')">Dashboard</ResponsiveNavLink>
@@ -180,6 +194,7 @@ const isResponder = computed(() => roles.value.includes('responder'));
                             <ResponsiveNavLink :href="route('reports.create')" :active="route().current('reports.create')">Submit Report</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('my-reports')" :active="route().current('my-reports')">My Reports</ResponsiveNavLink>
                         </template>
+                        <ResponsiveNavLink :href="route('map')" :active="route().current('map')">Live Map</ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('news.index')" :active="route().current('news.*')">News</ResponsiveNavLink>
                     </div>
 

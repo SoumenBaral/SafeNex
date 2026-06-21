@@ -1,7 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import LocationPicker from '@/Components/Map/LocationPicker.vue';
+import MediaUploader from '@/Components/Report/MediaUploader.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     categories: Array,
@@ -19,7 +21,15 @@ const form = useForm({
     longitude: '',
     severity: 'medium',
     occurred_at: '',
+    media: [],
 });
+
+const mapLocation = ref({ lat: 23.8103, lng: 90.4125 });
+
+watch(mapLocation, (val) => {
+    form.latitude = val.lat;
+    form.longitude = val.lng;
+}, { deep: true });
 
 const selectedDistrict = computed(() => {
     return props.districts.find(d => d.id == form.district_id);
@@ -41,6 +51,7 @@ function useMyLocation() {
         (pos) => {
             form.latitude = pos.coords.latitude.toFixed(7);
             form.longitude = pos.coords.longitude.toFixed(7);
+            mapLocation.value = { lat: form.latitude, lng: form.longitude };
             gettingLocation.value = false;
         },
         () => {
@@ -51,7 +62,9 @@ function useMyLocation() {
 }
 
 function submit() {
-    form.post(route('reports.store'));
+    form.post(route('reports.store'), {
+        forceFormData: true,
+    });
 }
 </script>
 
@@ -148,6 +161,8 @@ function submit() {
                                 <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                 {{ gettingLocation ? 'Getting location...' : 'Use my location' }}
                             </button>
+                            <LocationPicker v-model="mapLocation" class="mt-3" />
+                            <p class="mt-1 text-xs text-gray-400">Click on the map or drag the marker to set the exact location.</p>
                             <p v-if="form.errors.latitude" class="mt-1 text-sm text-red-600">{{ form.errors.latitude }}</p>
                             <p v-if="form.errors.longitude" class="mt-1 text-sm text-red-600">{{ form.errors.longitude }}</p>
                         </div>
@@ -160,6 +175,9 @@ function submit() {
                                 placeholder="Describe the situation in detail..."></textarea>
                             <p v-if="form.errors.description" class="mt-1 text-sm text-red-600">{{ form.errors.description }}</p>
                         </div>
+
+                        <!-- Media Upload -->
+                        <MediaUploader v-model="form.media" :errors="form.errors" />
 
                         <!-- Occurred At -->
                         <div>

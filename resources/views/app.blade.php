@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        @auth
+        <meta name="user-id" content="{{ auth()->id() }}">
+        @endauth
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -17,5 +20,9 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+        @if(config('services.google_maps.key'))
+            <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=marker"></script>
+        @endif
     </body>
 </html>

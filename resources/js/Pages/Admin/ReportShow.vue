@@ -75,6 +75,12 @@ const severityColors = {
                         </div>
 
                         <!-- Action Buttons -->
+                        <div v-if="report.status === 'verified'" class="flex-shrink-0">
+                            <Link :href="route('admin.assignments.create', report.id)"
+                                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+                                Assign Rescue Team
+                            </Link>
+                        </div>
                         <div v-if="report.status === 'pending'" class="flex gap-2 flex-shrink-0">
                             <button @click="verify"
                                 class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
@@ -128,6 +134,21 @@ const severityColors = {
                     <div class="mt-6">
                         <h4 class="text-sm font-medium text-gray-500">Description</h4>
                         <p class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ report.description }}</p>
+                    </div>
+
+                    <!-- Media Gallery -->
+                    <div v-if="report.media && report.media.length" class="mt-6">
+                        <h4 class="text-sm font-medium text-gray-500">Attached Media</h4>
+                        <div class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            <div v-for="m in report.media" :key="m.id">
+                                <a v-if="m.type === 'image'" :href="`/storage/${m.path}`" target="_blank">
+                                    <img :src="`/storage/${m.thumbnail_path || m.path}`"
+                                        class="h-32 w-full rounded-md object-cover hover:opacity-90 transition" />
+                                </a>
+                                <video v-else :src="`/storage/${m.path}`" controls
+                                    class="h-32 w-full rounded-md object-cover bg-black"></video>
+                            </div>
+                        </div>
                     </div>
 
                     <div v-if="report.rejection_reason" class="mt-6 rounded-md bg-red-50 p-4">
