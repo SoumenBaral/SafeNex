@@ -1,82 +1,133 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import StatCard from '@/Components/UI/StatCard.vue';
+import SeverityBadge from '@/Components/UI/SeverityBadge.vue';
+import TimeAgo from '@/Components/UI/TimeAgo.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
     stats: Object,
+    recentReports: Array,
 });
 </script>
 
 <template>
-    <Head title="Admin Dashboard" />
+    <Head title="Admin Dashboard — Safenix" />
+    <AdminLayout>
+        <div class="space-y-8">
+            <!-- Page title -->
+            <div>
+                <h1 class="font-display font-bold text-white text-2xl">Dashboard</h1>
+                <p class="text-ink-400 text-sm mt-1">Overview of the platform status</p>
+            </div>
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Admin Dashboard</h2>
-        </template>
+            <!-- Stat cards -->
+            <div class="grid grid-cols-2 xl:grid-cols-3 gap-4">
+                <StatCard
+                    label="Pending Reports"
+                    :value="stats?.pending_reports ?? 0"
+                    icon="⚠"
+                    icon-bg="bg-[#B7791F]/15"
+                    trend="Awaiting review"
+                    :trend-up="false"
+                    :href="route('admin.reports.index', { status: 'pending' })"
+                    dark
+                />
+                <StatCard
+                    label="Verified Reports"
+                    :value="stats?.verified_reports ?? 0"
+                    icon="✓"
+                    icon-bg="bg-[#157F6B]/15"
+                    :trend="`${stats?.verified_today ?? 0} verified today`"
+                    :trend-up="true"
+                    :href="route('admin.reports.index', { status: 'verified' })"
+                    dark
+                />
+                <StatCard
+                    label="Total Reports"
+                    :value="stats?.total_reports ?? 0"
+                    icon="📋"
+                    icon-bg="bg-white/10"
+                    dark
+                />
+                <StatCard
+                    label="Registered Users"
+                    :value="stats?.total_users ?? 0"
+                    icon="👥"
+                    icon-bg="bg-bay-600/20"
+                    dark
+                />
+                <StatCard
+                    label="Rescue Teams"
+                    :value="stats?.total_teams ?? 0"
+                    icon="🚑"
+                    icon-bg="bg-[#E5611F]/15"
+                    :href="route('admin.teams.index')"
+                    dark
+                />
+                <StatCard
+                    label="Published News"
+                    :value="stats?.published_news ?? 0"
+                    icon="📰"
+                    icon-bg="bg-purple-500/15"
+                    :href="route('admin.news.index')"
+                    dark
+                />
+            </div>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Quick actions -->
+            <div>
+                <h2 class="font-display font-semibold text-white text-sm uppercase tracking-wider mb-4">Quick actions</h2>
+                <div class="flex flex-wrap gap-3">
                     <Link :href="route('admin.reports.index', { status: 'pending' })"
-                        class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-gray-200 hover:shadow-md transition sm:p-6">
-                        <dt class="truncate text-sm font-medium text-gray-500">Pending Reports</dt>
-                        <dd class="mt-1 text-3xl font-semibold tracking-tight text-yellow-600">{{ stats?.pending_reports ?? 0 }}</dd>
+                        class="inline-flex items-center gap-2 bg-ink-700 hover:bg-ink-600 border border-ink-600 hover:border-ink-500 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-all">
+                        🔍 Review Reports
+                        <span v-if="stats?.pending_reports" class="bg-[#B7791F] text-white text-xs font-data px-1.5 py-0.5 rounded-full">{{ stats.pending_reports }}</span>
                     </Link>
-
-                    <Link :href="route('admin.reports.index', { status: 'verified' })"
-                        class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-gray-200 hover:shadow-md transition sm:p-6">
-                        <dt class="truncate text-sm font-medium text-gray-500">Verified Reports</dt>
-                        <dd class="mt-1 text-3xl font-semibold tracking-tight text-green-600">{{ stats?.verified_reports ?? 0 }}</dd>
+                    <Link :href="route('admin.alerts.index')"
+                        class="inline-flex items-center gap-2 bg-ink-700 hover:bg-ink-600 border border-ink-600 hover:border-ink-500 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-all">
+                        🚨 Send Alert
                     </Link>
-
-                    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-gray-200 sm:p-6">
-                        <dt class="truncate text-sm font-medium text-gray-500">Total Reports</dt>
-                        <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ stats?.total_reports ?? 0 }}</dd>
-                    </div>
-
-                    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-gray-200 sm:p-6">
-                        <dt class="truncate text-sm font-medium text-gray-500">Registered Users</dt>
-                        <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ stats?.total_users ?? 0 }}</dd>
-                    </div>
-
+                    <Link :href="route('admin.news.create')"
+                        class="inline-flex items-center gap-2 bg-ink-700 hover:bg-ink-600 border border-ink-600 hover:border-ink-500 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-all">
+                        📝 Write Article
+                    </Link>
                     <Link :href="route('admin.teams.index')"
-                        class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-gray-200 hover:shadow-md transition sm:p-6">
-                        <dt class="truncate text-sm font-medium text-gray-500">Rescue Teams</dt>
-                        <dd class="mt-1 text-3xl font-semibold tracking-tight text-indigo-600">{{ stats?.total_teams ?? 0 }}</dd>
-                    </Link>
-
-                    <Link :href="route('admin.news.index')"
-                        class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-gray-200 hover:shadow-md transition sm:p-6">
-                        <dt class="truncate text-sm font-medium text-gray-500">Published News</dt>
-                        <dd class="mt-1 text-3xl font-semibold tracking-tight text-indigo-600">{{ stats?.published_news ?? 0 }}</dd>
+                        class="inline-flex items-center gap-2 bg-ink-700 hover:bg-ink-600 border border-ink-600 hover:border-ink-500 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-all">
+                        👥 Manage Teams
                     </Link>
                 </div>
+            </div>
 
-                <!-- Quick Actions -->
-                <div class="mt-8">
-                    <h3 class="text-lg font-medium text-gray-900">Quick Actions</h3>
-                    <div class="mt-4 flex flex-wrap gap-3">
-                        <Link :href="route('admin.reports.index', { status: 'pending' })"
-                            class="inline-flex items-center rounded-md bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-700 ring-1 ring-yellow-600/20 hover:bg-yellow-100">
-                            Review Pending Reports
-                        </Link>
-                        <Link :href="route('admin.teams.index')"
-                            class="inline-flex items-center rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 ring-1 ring-indigo-600/20 hover:bg-indigo-100">
-                            Manage Teams
-                        </Link>
-                        <Link :href="route('admin.alerts.index')"
-                            class="inline-flex items-center rounded-md bg-red-50 px-4 py-2 text-sm font-medium text-red-700 ring-1 ring-red-600/20 hover:bg-red-100">
-                            Send Alert
-                        </Link>
-                        <Link :href="route('admin.news.create')"
-                            class="inline-flex items-center rounded-md bg-green-50 px-4 py-2 text-sm font-medium text-green-700 ring-1 ring-green-600/20 hover:bg-green-100">
-                            Write Article
-                        </Link>
+            <!-- Recent activity -->
+            <div>
+                <h2 class="font-display font-semibold text-white text-sm uppercase tracking-wider mb-4">Recent reports</h2>
+                <div class="bg-ink-800 rounded-xl border border-ink-600 overflow-hidden">
+                    <div v-if="recentReports?.length">
+                        <div
+                            v-for="report in recentReports"
+                            :key="report.id"
+                            class="flex items-center gap-4 px-5 py-4 border-b border-ink-700 last:border-0 hover:bg-ink-700/50 transition-colors"
+                        >
+                            <SeverityBadge :level="report.severity" />
+                            <div class="flex-1 min-w-0">
+                                <p class="text-white text-sm font-medium truncate">{{ report.title }}</p>
+                                <p class="text-ink-400 text-xs font-data mt-0.5">{{ report.district?.name }} · {{ report.category?.name }}</p>
+                            </div>
+                            <TimeAgo :date="report.created_at" />
+                            <Link
+                                :href="route('admin.reports.show', report.id)"
+                                class="text-bay-400 hover:text-bay-300 text-xs font-medium flex-shrink-0 transition-colors"
+                            >
+                                Review →
+                            </Link>
+                        </div>
+                    </div>
+                    <div v-else class="py-12 text-center">
+                        <p class="text-ink-400 text-sm">No recent reports.</p>
                     </div>
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>

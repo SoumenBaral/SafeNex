@@ -1,30 +1,26 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import SeverityBadge from '@/Components/UI/SeverityBadge.vue';
+import TimeAgo from '@/Components/UI/TimeAgo.vue';
+import EmptyState from '@/Components/UI/EmptyState.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     assignments: Object,
 });
 
-const statusColors = {
-    assigned: 'bg-blue-100 text-blue-800',
-    en_route: 'bg-yellow-100 text-yellow-800',
-    on_site: 'bg-orange-100 text-orange-800',
-    completed: 'bg-green-100 text-green-800',
-    cancelled: 'bg-gray-100 text-gray-800',
-};
-
-const severityColors = {
-    low: 'bg-blue-100 text-blue-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-orange-100 text-orange-800',
-    critical: 'bg-red-100 text-red-800',
-};
-
 const nextStatuses = {
-    assigned: { value: 'en_route', label: 'Mark En Route' },
-    en_route: { value: 'on_site', label: 'Mark On Site' },
-    on_site: { value: 'completed', label: 'Mark Completed' },
+    assigned: { value: 'en_route',  label: 'Mark en route' },
+    en_route: { value: 'on_site',   label: 'Mark on site' },
+    on_site:  { value: 'completed', label: 'Mark completed' },
+};
+
+const statusMap = {
+    assigned:  { label: 'Assigned',  classes: 'bg-bay-600/10 text-bay-400',      dot: 'bg-bay-500' },
+    en_route:  { label: 'En route',  classes: 'bg-[#E5611F]/10 text-[#E5611F]',  dot: 'bg-[#E5611F]' },
+    on_site:   { label: 'On site',   classes: 'bg-[#D62839]/10 text-[#D62839]',  dot: 'bg-[#D62839]' },
+    completed: { label: 'Completed', classes: 'bg-[#157F6B]/10 text-[#157F6B]',  dot: 'bg-[#157F6B]' },
+    cancelled: { label: 'Cancelled', classes: 'bg-gray-100 text-gray-500',        dot: 'bg-gray-400' },
 };
 
 function updateStatus(assignment, newStatus) {
@@ -33,79 +29,106 @@ function updateStatus(assignment, newStatus) {
 </script>
 
 <template>
-    <Head title="Responder Dashboard" />
-
+    <Head title="My Assignments — Safenix" />
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">My Assignments</h2>
-        </template>
+        <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+            <!-- Header -->
+            <div>
+                <h1 class="font-display font-bold text-gray-900 text-2xl">My Assignments</h1>
+                <p class="text-gray-500 text-sm mt-1">Active incidents assigned to your team</p>
+            </div>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div v-if="!assignments?.data?.length" class="p-6 text-center text-gray-500">
-                        No assignments yet. You will see incidents here when a team you belong to is assigned.
+            <!-- Empty state -->
+            <EmptyState
+                v-if="!assignments?.data?.length"
+                icon="🚑"
+                title="No assignments yet"
+                description="When an admin assigns your team to an incident, it will appear here."
+            />
+
+            <!-- Assignment cards -->
+            <div v-else class="space-y-4">
+                <div
+                    v-for="a in assignments.data"
+                    :key="a.id"
+                    class="bg-white rounded-xl border border-line shadow-card overflow-hidden"
+                >
+                    <!-- Status header bar -->
+                    <div :class="['h-1', statusMap[a.status]?.dot ? 'bg-current' : 'bg-gray-200']"
+                        :style="{ background: { assigned: '#109AA6', en_route: '#E5611F', on_site: '#D62839', completed: '#157F6B', cancelled: '#9CA3AF' }[a.status] }">
                     </div>
 
-                    <div v-else class="divide-y divide-gray-200">
-                        <div v-for="a in assignments.data" :key="a.id" class="p-6">
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h3 class="text-base font-semibold text-gray-900">{{ a.report?.title }}</h3>
-                                        <span :class="statusColors[a.status]"
-                                            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                            {{ a.status.replace('_', ' ') }}
-                                        </span>
-                                        <span v-if="a.report" :class="severityColors[a.report.severity]"
-                                            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                            {{ a.report.severity }}
-                                        </span>
-                                    </div>
-
-                                    <div class="mt-1 text-sm text-gray-500">
-                                        <span v-if="a.report?.category">{{ a.report.category.name }}</span>
-                                        <span v-if="a.report?.district"> &middot; {{ a.report.district.name }}</span>
-                                        <span v-if="a.report?.upazila"> / {{ a.report.upazila.name }}</span>
-                                    </div>
-
-                                    <p class="mt-2 text-sm text-gray-600">
-                                        <span class="font-medium">Reason:</span> {{ a.reason }}
-                                    </p>
-
-                                    <div class="mt-2 flex items-center gap-3 text-xs text-gray-400">
-                                        <span>Team: {{ a.team?.name }}</span>
-                                        <span>Assigned by: {{ a.assigned_by_user?.name ?? 'Admin' }}</span>
-                                        <span>{{ new Date(a.created_at).toLocaleString() }}</span>
-                                    </div>
-
-                                    <div v-if="a.report" class="mt-2">
-                                        <a :href="`https://maps.google.com/?q=${a.report.latitude},${a.report.longitude}`"
-                                            target="_blank" class="text-sm text-indigo-600 hover:text-indigo-500">
-                                            View on Google Maps &rarr;
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <!-- Status Update Button -->
-                                <div v-if="nextStatuses[a.status]" class="flex-shrink-0">
-                                    <button @click="updateStatus(a, nextStatuses[a.status].value)"
-                                        class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-                                        {{ nextStatuses[a.status].label }}
-                                    </button>
-                                </div>
+                    <div class="p-5">
+                        <!-- Title + badges -->
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex-1 min-w-0">
+                                <h2 class="font-display font-semibold text-gray-900 leading-snug">{{ a.report?.title }}</h2>
+                                <p class="text-gray-500 text-xs mt-0.5 font-data">
+                                    {{ a.report?.category?.name }}
+                                    <span v-if="a.report?.district"> · {{ a.report.district.name }}</span>
+                                    <span v-if="a.report?.upazila"> / {{ a.report.upazila.name }}</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <SeverityBadge v-if="a.report?.severity" :level="a.report.severity" />
+                                <span :class="['text-xs font-medium px-2.5 py-1 rounded-full', statusMap[a.status]?.classes]">
+                                    {{ statusMap[a.status]?.label }}
+                                </span>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Pagination -->
-                    <div v-if="assignments?.links && assignments.last_page > 1" class="border-t border-gray-200 px-6 py-3 flex justify-center gap-1">
-                        <a v-for="link in assignments.links" :key="link.label"
-                            :href="link.url ?? '#'"
-                            :class="['px-3 py-1 rounded text-sm', link.active ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-100', !link.url ? 'opacity-50 pointer-events-none' : '']"
-                            v-html="link.label" />
+                        <!-- Reason -->
+                        <div class="bg-gray-50 rounded-lg px-3 py-2.5 mb-4">
+                            <p class="text-xs font-semibold text-gray-500 mb-1">Assignment reason</p>
+                            <p class="text-gray-700 text-sm leading-relaxed">{{ a.reason }}</p>
+                        </div>
+
+                        <!-- Meta -->
+                        <div class="flex items-center gap-4 text-xs text-gray-400 font-data mb-4">
+                            <span>Team: {{ a.team?.name }}</span>
+                            <span>·</span>
+                            <span>By {{ a.assigned_by_user?.name ?? 'Admin' }}</span>
+                            <span>·</span>
+                            <TimeAgo :date="a.created_at" />
+                        </div>
+
+                        <!-- Coordinates + map link -->
+                        <div v-if="a.report?.latitude" class="flex items-center justify-between mb-4">
+                            <span class="font-data text-xs text-bay-600">{{ a.report.latitude }}, {{ a.report.longitude }}</span>
+                            <a :href="`https://maps.google.com/?q=${a.report.latitude},${a.report.longitude}`"
+                                target="_blank"
+                                class="inline-flex items-center gap-1 text-xs text-bay-600 hover:text-bay-700 font-medium transition-colors">
+                                📍 Open in Maps →
+                            </a>
+                        </div>
+
+                        <!-- Progress control (big, thumb-friendly) -->
+                        <div v-if="nextStatuses[a.status]">
+                            <button
+                                @click="updateStatus(a, nextStatuses[a.status].value)"
+                                class="w-full bg-bay-600 hover:bg-bay-700 text-white font-semibold py-4 rounded-xl transition-colors text-sm min-h-[3.5rem]"
+                            >
+                                {{ nextStatuses[a.status].label }}
+                            </button>
+                        </div>
+                        <div v-else-if="a.status === 'completed'" class="w-full bg-[#157F6B]/10 text-[#157F6B] font-semibold py-4 rounded-xl text-sm text-center">
+                            ✓ Assignment completed
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Pagination -->
+            <div v-if="assignments?.last_page > 1" class="flex justify-center gap-1">
+                <a v-for="link in assignments.links" :key="link.label"
+                    :href="link.url ?? '#'"
+                    :class="[
+                        'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                        link.active ? 'bg-bay-600 text-white' : 'text-gray-600 hover:bg-gray-100',
+                        !link.url   ? 'opacity-40 pointer-events-none' : '',
+                    ]"
+                    v-html="link.label"
+                />
             </div>
         </div>
     </AuthenticatedLayout>

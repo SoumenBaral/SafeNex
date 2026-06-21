@@ -1,115 +1,124 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    article: Object,
+    article:    Object,
     categories: Array,
-    districts: Array,
+    districts:  Array,
 });
 
 const form = useForm({
-    title: props.article.title,
-    excerpt: props.article.excerpt ?? '',
-    body: props.article.body,
+    title:       props.article.title,
+    excerpt:     props.article.excerpt ?? '',
+    body:        props.article.body,
     category_id: props.article.category_id ?? '',
     district_id: props.article.district_id ?? '',
-    status: props.article.status,
+    status:      props.article.status,
     cover_image: null,
 });
 
 function submit() {
-    form.transform((data) => ({
-        ...data,
-        _method: 'put',
-    })).post(route('admin.news.update', props.article.id), {
-        forceFormData: true,
-    });
+    form.transform(data => ({ ...data, _method: 'put' }))
+        .post(route('admin.news.update', props.article.id), { forceFormData: true });
 }
 </script>
 
 <template>
-    <Head :title="`Edit: ${article.title}`" />
-
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Edit Article</h2>
-        </template>
-
-        <div class="py-12">
-            <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <form @submit.prevent="submit" class="p-6 space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Title *</label>
-                            <input v-model="form.title" type="text"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                            <p v-if="form.errors.title" class="mt-1 text-sm text-red-600">{{ form.errors.title }}</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Category</label>
-                                <select v-model="form.category_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="">None</option>
-                                    <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">District</label>
-                                <select v-model="form.district_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="">None</option>
-                                    <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Excerpt</label>
-                            <textarea v-model="form.excerpt" rows="2"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Body *</label>
-                            <textarea v-model="form.body" rows="12"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                            <p v-if="form.errors.body" class="mt-1 text-sm text-red-600">{{ form.errors.body }}</p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Cover Image</label>
-                            <img v-if="article.cover_image" :src="`/storage/${article.cover_image}`"
-                                class="mb-2 h-32 w-auto rounded-md object-cover" />
-                            <input type="file" accept="image/*" @change="form.cover_image = $event.target.files[0]"
-                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100" />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Status</label>
-                            <div class="mt-2 flex gap-4">
-                                <label class="flex items-center gap-2">
-                                    <input type="radio" v-model="form.status" value="draft" class="text-indigo-600 focus:ring-indigo-500" />
-                                    <span class="text-sm text-gray-700">Draft</span>
-                                </label>
-                                <label class="flex items-center gap-2">
-                                    <input type="radio" v-model="form.status" value="published" class="text-indigo-600 focus:ring-indigo-500" />
-                                    <span class="text-sm text-gray-700">Published</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit" :disabled="form.processing"
-                                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50">
-                                {{ form.processing ? 'Saving...' : 'Update Article' }}
-                            </button>
-                        </div>
-                    </form>
+    <Head :title="`Edit: ${article.title} — Safenix`" />
+    <AdminLayout>
+        <div class="space-y-6 max-w-3xl">
+            <!-- Header -->
+            <div class="flex items-center gap-3">
+                <Link :href="route('admin.news.index')" class="text-ink-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-ink-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </Link>
+                <div>
+                    <h1 class="font-display font-bold text-white text-xl">Edit article</h1>
+                    <p class="text-ink-400 text-xs font-data mt-0.5">{{ article.slug }}</p>
                 </div>
             </div>
+
+            <form @submit.prevent="submit" class="space-y-5">
+                <!-- Title -->
+                <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
+                    <label class="block text-ink-300 text-xs font-medium uppercase tracking-wider mb-2">Title <span class="text-[#D62839]">*</span></label>
+                    <input v-model="form.title" type="text"
+                        class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-base px-4 py-3 placeholder-ink-500 focus:border-bay-500 focus:ring-0 font-display"
+                        placeholder="Article headline…" />
+                    <p v-if="form.errors.title" class="mt-1.5 text-xs text-[#D62839]">{{ form.errors.title }}</p>
+                </div>
+
+                <!-- Meta row -->
+                <div class="bg-ink-800 rounded-xl border border-ink-600 p-5 grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-ink-300 text-xs font-medium uppercase tracking-wider mb-2">Category</label>
+                        <select v-model="form.category_id"
+                            class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 focus:border-bay-500 focus:ring-0">
+                            <option value="">None</option>
+                            <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-ink-300 text-xs font-medium uppercase tracking-wider mb-2">District</label>
+                        <select v-model="form.district_id"
+                            class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 focus:border-bay-500 focus:ring-0">
+                            <option value="">None</option>
+                            <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Excerpt -->
+                <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
+                    <label class="block text-ink-300 text-xs font-medium uppercase tracking-wider mb-2">Excerpt</label>
+                    <textarea v-model="form.excerpt" rows="2"
+                        class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0 resize-none"
+                        placeholder="Short summary shown on the news index…"></textarea>
+                </div>
+
+                <!-- Body -->
+                <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
+                    <label class="block text-ink-300 text-xs font-medium uppercase tracking-wider mb-2">Body <span class="text-[#D62839]">*</span></label>
+                    <textarea v-model="form.body" rows="14"
+                        class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0 resize-y"
+                        placeholder="Full article content…"></textarea>
+                    <p v-if="form.errors.body" class="mt-1.5 text-xs text-[#D62839]">{{ form.errors.body }}</p>
+                </div>
+
+                <!-- Cover image -->
+                <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
+                    <label class="block text-ink-300 text-xs font-medium uppercase tracking-wider mb-3">Cover image</label>
+                    <div v-if="article.cover_image" class="mb-3 relative inline-block">
+                        <img :src="`/storage/${article.cover_image}`" :alt="article.title"
+                            class="h-32 w-auto rounded-lg object-cover border border-ink-600" />
+                        <span class="absolute top-2 left-2 bg-ink-900/80 text-ink-300 text-xs px-2 py-0.5 rounded">Current</span>
+                    </div>
+                    <input type="file" accept="image/*" @change="form.cover_image = $event.target.files[0]"
+                        class="w-full text-sm text-ink-400 file:mr-4 file:rounded-lg file:border-0 file:bg-bay-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-bay-700 cursor-pointer" />
+                    <p class="mt-1.5 text-xs text-ink-500">Upload a new image to replace the current one.</p>
+                </div>
+
+                <!-- Status + submit -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" v-model="form.status" value="draft"
+                                class="text-bay-600 focus:ring-bay-500 bg-ink-900 border-ink-600" />
+                            <span class="text-ink-300 text-sm">Save as draft</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" v-model="form.status" value="published"
+                                class="text-bay-600 focus:ring-bay-500 bg-ink-900 border-ink-600" />
+                            <span class="text-ink-300 text-sm">Published</span>
+                        </label>
+                    </div>
+                    <button type="submit" :disabled="form.processing"
+                        class="inline-flex items-center gap-2 bg-bay-600 hover:bg-bay-700 disabled:opacity-60 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors text-sm">
+                        {{ form.processing ? 'Saving…' : 'Update article' }}
+                    </button>
+                </div>
+            </form>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>

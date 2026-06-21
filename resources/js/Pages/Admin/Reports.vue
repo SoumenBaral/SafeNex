@@ -1,30 +1,22 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import SeverityBadge from '@/Components/UI/SeverityBadge.vue';
+import StatusBadge from '@/Components/UI/StatusBadge.vue';
+import TimeAgo from '@/Components/UI/TimeAgo.vue';
+import EmptyState from '@/Components/UI/EmptyState.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     reports: Object,
     currentStatus: String,
+    pendingCount: Number,
 });
 
-const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    verified: 'bg-green-100 text-green-800',
-    rejected: 'bg-red-100 text-red-800',
-};
-
-const severityColors = {
-    low: 'bg-blue-100 text-blue-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-orange-100 text-orange-800',
-    critical: 'bg-red-100 text-red-800',
-};
-
 const tabs = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'verified', label: 'Verified' },
-    { value: 'rejected', label: 'Rejected' },
-    { value: 'all', label: 'All' },
+    { value: 'pending',  label: 'Pending',  badge: true },
+    { value: 'verified', label: 'Verified'  },
+    { value: 'rejected', label: 'Rejected'  },
+    { value: 'all',      label: 'All'       },
 ];
 
 function filterByStatus(status) {
@@ -33,80 +25,96 @@ function filterByStatus(status) {
 </script>
 
 <template>
-    <Head title="Admin - Reports" />
+    <Head title="Reports — Safenix Admin" />
+    <AdminLayout>
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="font-display font-bold text-white text-2xl">Report Queue</h1>
+                    <p class="text-ink-400 text-sm mt-1">Review and verify submitted incident reports</p>
+                </div>
+            </div>
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Report Review Queue</h2>
-        </template>
+            <!-- Filter tabs -->
+            <div class="flex items-center gap-1 bg-ink-800 rounded-xl p-1 border border-ink-600 self-start w-fit">
+                <button
+                    v-for="tab in tabs" :key="tab.value"
+                    @click="filterByStatus(tab.value)"
+                    :class="[
+                        'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                        currentStatus === tab.value
+                            ? 'bg-bay-600 text-white shadow-sm'
+                            : 'text-ink-400 hover:text-white hover:bg-ink-700',
+                    ]"
+                >
+                    {{ tab.label }}
+                    <span
+                        v-if="tab.badge && pendingCount"
+                        class="bg-[#B7791F] text-white text-xs font-data px-1.5 py-0.5 rounded-full"
+                    >{{ pendingCount }}</span>
+                </button>
+            </div>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <!-- Tabs -->
-                <div class="mb-4 flex gap-2">
-                    <button v-for="tab in tabs" :key="tab.value"
-                        @click="filterByStatus(tab.value)"
-                        :class="[
-                            'rounded-md px-4 py-2 text-sm font-medium',
-                            currentStatus === tab.value
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                        ]">
-                        {{ tab.label }}
-                    </button>
+            <!-- Reports list -->
+            <div class="bg-ink-800 rounded-xl border border-ink-600 overflow-hidden">
+                <!-- Empty state -->
+                <div v-if="!reports.data.length" class="py-16 flex flex-col items-center justify-center">
+                    <div class="text-4xl mb-4">✅</div>
+                    <p class="text-white font-semibold font-display">
+                        {{ currentStatus === 'pending' ? 'Queue clear. No reports waiting for review.' : 'No reports found.' }}
+                    </p>
+                    <p class="text-ink-400 text-sm mt-1">
+                        {{ currentStatus === 'pending' ? 'You\'re all caught up.' : 'Try a different filter.' }}
+                    </p>
                 </div>
 
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div v-if="reports.data.length === 0" class="p-6 text-center text-gray-500">
-                        No {{ currentStatus !== 'all' ? currentStatus : '' }} reports found.
+                <template v-else>
+                    <!-- Table header -->
+                    <div class="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-5 py-3 border-b border-ink-700">
+                        <span class="text-xs font-semibold text-ink-400 uppercase tracking-wider">Report</span>
+                        <span class="text-xs font-semibold text-ink-400 uppercase tracking-wider">Severity</span>
+                        <span class="text-xs font-semibold text-ink-400 uppercase tracking-wider">Status</span>
+                        <span class="text-xs font-semibold text-ink-400 uppercase tracking-wider">Submitted</span>
+                        <span class="text-xs font-semibold text-ink-400 uppercase tracking-wider sr-only">Action</span>
                     </div>
 
-                    <div v-else class="divide-y divide-gray-200">
-                        <Link v-for="report in reports.data" :key="report.id"
-                            :href="route('admin.reports.show', report.id)"
-                            class="block p-6 hover:bg-gray-50 transition">
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h3 class="text-base font-semibold text-gray-900 truncate">{{ report.title }}</h3>
-                                        <span :class="statusColors[report.status]"
-                                            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                            {{ report.status }}
-                                        </span>
-                                        <span :class="severityColors[report.severity]"
-                                            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                            {{ report.severity }}
-                                        </span>
-                                    </div>
-                                    <div class="mt-1 flex items-center gap-3 text-sm text-gray-500">
-                                        <span v-if="report.category">{{ report.category.name }}</span>
-                                        <span v-if="report.district">{{ report.district.name }}</span>
-                                        <span v-if="report.upazila">/ {{ report.upazila.name }}</span>
-                                    </div>
-                                    <div class="mt-1 text-sm text-gray-400">
-                                        By {{ report.user?.name }} &middot; {{ new Date(report.created_at).toLocaleString() }}
-                                    </div>
-                                </div>
-                                <svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </Link>
-                    </div>
+                    <Link
+                        v-for="report in reports.data"
+                        :key="report.id"
+                        :href="route('admin.reports.show', report.id)"
+                        class="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-5 py-4 border-b border-ink-700 last:border-0 hover:bg-ink-700/50 transition-colors group"
+                    >
+                        <div class="min-w-0">
+                            <p class="text-white text-sm font-medium truncate group-hover:text-bay-300 transition-colors">{{ report.title }}</p>
+                            <p class="text-ink-400 text-xs font-data mt-0.5">
+                                {{ report.category?.name }}
+                                <span v-if="report.district"> · {{ report.district.name }}</span>
+                                <span v-if="report.upazila"> / {{ report.upazila.name }}</span>
+                                · by {{ report.user?.name }}
+                            </p>
+                        </div>
+                        <SeverityBadge :level="report.severity" />
+                        <StatusBadge :status="report.status" />
+                        <TimeAgo :date="report.created_at" />
+                        <span class="text-bay-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">Review →</span>
+                    </Link>
+                </template>
 
-                    <!-- Pagination -->
-                    <div v-if="reports.links && reports.last_page > 1" class="border-t border-gray-200 px-6 py-3 flex justify-center gap-1">
-                        <Link v-for="link in reports.links" :key="link.label"
-                            :href="link.url ?? '#'"
-                            :class="[
-                                'px-3 py-1 rounded text-sm',
-                                link.active ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-100',
-                                !link.url ? 'opacity-50 pointer-events-none' : ''
-                            ]"
-                            v-html="link.label" />
-                    </div>
+                <!-- Pagination -->
+                <div v-if="reports.last_page > 1" class="flex justify-center gap-1 px-5 py-4 border-t border-ink-700">
+                    <Link
+                        v-for="link in reports.links" :key="link.label"
+                        :href="link.url ?? '#'"
+                        :class="[
+                            'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                            link.active  ? 'bg-bay-600 text-white' : 'text-ink-400 hover:text-white hover:bg-ink-700',
+                            !link.url    ? 'opacity-40 pointer-events-none' : '',
+                        ]"
+                        v-html="link.label"
+                    />
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>

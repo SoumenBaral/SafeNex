@@ -1,252 +1,131 @@
 <script setup>
 import { ref, computed } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import NotificationBell from '@/Components/NotificationBell.vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import NotificationBell from '@/Components/NotificationBell.vue';
 
-const showingNavigationDropdown = ref(false);
-const roles = computed(() => usePage().props.auth.roles ?? []);
+const showMobileMenu = ref(false);
+const page = usePage();
+const roles = computed(() => page.props.auth.roles ?? []);
 const isAdmin = computed(() => roles.value.includes('admin'));
 const isResponder = computed(() => roles.value.includes('responder'));
+const user = computed(() => page.props.auth.user);
+const initials = computed(() => user.value?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() ?? '?');
+const roleLabel = computed(() => isAdmin.value ? 'Admin' : isResponder.value ? 'Responder' : 'User');
+const roleBadgeClass = computed(() => ({
+    'Admin':     'bg-[#D62839]/10 text-[#D62839]',
+    'Responder': 'bg-[#E5611F]/10 text-[#E5611F]',
+    'User':      'bg-bay-50 text-bay-700',
+})[roleLabel.value]);
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
-                                </Link>
+    <div class="min-h-screen bg-paper">
+        <!-- Top Nav -->
+        <nav class="sticky top-0 z-30 bg-white border-b border-line shadow-sm">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <!-- Logo + Nav Links -->
+                    <div class="flex items-center gap-8">
+                        <Link :href="isAdmin ? route('admin.dashboard') : isResponder ? route('responder.dashboard') : route('dashboard')">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-bay-600 flex items-center justify-center text-white text-sm font-bold font-display">S</div>
+                                <span class="font-display font-bold text-gray-900 text-base tracking-tight">Safenix</span>
                             </div>
+                        </Link>
 
-                            <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <!-- Admin Nav -->
-                                <template v-if="isAdmin">
-                                    <NavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
-                                        Dashboard
-                                    </NavLink>
-                                    <NavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">
-                                        Reports
-                                    </NavLink>
-                                    <NavLink :href="route('admin.teams.index')" :active="route().current('admin.teams.*')">
-                                        Teams
-                                    </NavLink>
-                                    <NavLink :href="route('admin.alerts.index')" :active="route().current('admin.alerts.*')">
-                                        Alerts
-                                    </NavLink>
-                                    <NavLink :href="route('admin.news.index')" :active="route().current('admin.news.*')">
-                                        News
-                                    </NavLink>
-                                </template>
-
-                                <!-- Responder Nav -->
-                                <template v-else-if="isResponder">
-                                    <NavLink :href="route('responder.dashboard')" :active="route().current('responder.dashboard')">
-                                        Dashboard
-                                    </NavLink>
-                                </template>
-
-                                <!-- User Nav -->
-                                <template v-else>
-                                    <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                        Dashboard
-                                    </NavLink>
-                                    <NavLink :href="route('reports.create')" :active="route().current('reports.create')">
-                                        Submit Report
-                                    </NavLink>
-                                    <NavLink :href="route('my-reports')" :active="route().current('my-reports')">
-                                        My Reports
-                                    </NavLink>
-                                </template>
-
-                                <NavLink :href="route('map')" :active="route().current('map')">
-                                    Live Map
-                                </NavLink>
-                                <NavLink :href="route('news.index')" :active="route().current('news.*')">
-                                    News
-                                </NavLink>
-                            </div>
+                        <!-- Desktop nav -->
+                        <div class="hidden md:flex items-center gap-1">
+                            <template v-if="isResponder">
+                                <Link
+                                    :href="route('responder.dashboard')"
+                                    :class="['px-3 py-2 rounded-lg text-sm font-medium transition-colors', route().current('responder.dashboard') ? 'text-bay-600 bg-bay-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50']"
+                                >Dashboard</Link>
+                            </template>
+                            <template v-else>
+                                <Link
+                                    :href="route('dashboard')"
+                                    :class="['px-3 py-2 rounded-lg text-sm font-medium transition-colors', route().current('dashboard') ? 'text-bay-600 bg-bay-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50']"
+                                >Dashboard</Link>
+                                <Link
+                                    :href="route('reports.create')"
+                                    :class="['px-3 py-2 rounded-lg text-sm font-medium transition-colors', route().current('reports.create') ? 'text-bay-600 bg-bay-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50']"
+                                >Submit Report</Link>
+                                <Link
+                                    :href="route('my-reports')"
+                                    :class="['px-3 py-2 rounded-lg text-sm font-medium transition-colors', route().current('my-reports') ? 'text-bay-600 bg-bay-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50']"
+                                >My Reports</Link>
+                            </template>
+                            <Link
+                                :href="route('map')"
+                                :class="['px-3 py-2 rounded-lg text-sm font-medium transition-colors', route().current('map') ? 'text-bay-600 bg-bay-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50']"
+                            >Live Map</Link>
+                            <Link
+                                :href="route('news.index')"
+                                :class="['px-3 py-2 rounded-lg text-sm font-medium transition-colors', route().current('news.*') ? 'text-bay-600 bg-bay-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50']"
+                            >News</Link>
                         </div>
+                    </div>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <NotificationBell />
+                    <!-- Right side -->
+                    <div class="flex items-center gap-3">
+                        <NotificationBell />
 
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
+                        <!-- Avatar + dropdown -->
+                        <div class="relative group">
+                            <button class="flex items-center gap-2 p-1 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-bay-700 flex items-center justify-center text-white text-xs font-bold">{{ initials }}</div>
+                                <div class="hidden sm:block text-left">
+                                    <p class="text-sm font-medium text-gray-800 leading-none">{{ user?.name }}</p>
+                                    <span :class="['text-xs font-medium px-1.5 py-0.5 rounded-full', roleBadgeClass]">{{ roleLabel }}</span>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
-                >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <template v-if="isAdmin">
-                            <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">Dashboard</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">Reports</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('admin.teams.index')" :active="route().current('admin.teams.*')">Teams</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('admin.alerts.index')" :active="route().current('admin.alerts.*')">Alerts</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('admin.news.index')" :active="route().current('admin.news.*')">News</ResponsiveNavLink>
-                        </template>
-                        <template v-else-if="isResponder">
-                            <ResponsiveNavLink :href="route('responder.dashboard')" :active="route().current('responder.dashboard')">Dashboard</ResponsiveNavLink>
-                        </template>
-                        <template v-else>
-                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('reports.create')" :active="route().current('reports.create')">Submit Report</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('my-reports')" :active="route().current('my-reports')">My Reports</ResponsiveNavLink>
-                        </template>
-                        <ResponsiveNavLink :href="route('map')" :active="route().current('map')">Live Map</ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('news.index')" :active="route().current('news.*')">News</ResponsiveNavLink>
-                    </div>
-
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
-                    >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
+                            <!-- Dropdown -->
+                            <div class="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lift border border-line py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                <Link :href="route('profile.edit')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</Link>
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <Link :href="route('logout')" method="post" as="button" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Log out</Link>
                             </div>
                         </div>
 
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
+                        <!-- Mobile menu button -->
+                        <button @click="showMobileMenu = !showMobileMenu" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-50">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path v-if="!showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-            </nav>
+            </div>
 
-            <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
+            <!-- Mobile menu -->
+            <div v-if="showMobileMenu" class="md:hidden border-t border-line bg-white px-4 py-3 space-y-1">
+                <template v-if="isResponder">
+                    <Link :href="route('responder.dashboard')" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Dashboard</Link>
+                </template>
+                <template v-else>
+                    <Link :href="route('dashboard')" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Dashboard</Link>
+                    <Link :href="route('reports.create')" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Submit Report</Link>
+                    <Link :href="route('my-reports')" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">My Reports</Link>
+                </template>
+                <Link :href="route('map')" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Live Map</Link>
+                <Link :href="route('news.index')" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">News</Link>
+            </div>
+        </nav>
 
-            <!-- Page Content -->
-            <main>
-                <slot />
-            </main>
-        </div>
+        <!-- Page Header slot -->
+        <header v-if="$slots.header" class="bg-white border-b border-line">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+                <slot name="header" />
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="animate-fade-in">
+            <slot />
+        </main>
     </div>
 </template>

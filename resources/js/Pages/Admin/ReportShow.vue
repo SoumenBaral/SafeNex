@@ -1,192 +1,233 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import SeverityBadge from '@/Components/UI/SeverityBadge.vue';
+import StatusBadge from '@/Components/UI/StatusBadge.vue';
+import TimeAgo from '@/Components/UI/TimeAgo.vue';
+import ConfirmModal from '@/Components/UI/ConfirmModal.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const props = defineProps({
-    report: Object,
-});
+const props = defineProps({ report: Object });
 
-const showRejectModal = ref(false);
+const showVerifyModal  = ref(false);
+const showRejectPanel  = ref(false);
+const lightboxSrc      = ref(null);
 
-const rejectForm = useForm({
-    rejection_reason: '',
-});
+const rejectForm = useForm({ rejection_reason: '' });
+
+const quickReasons = ['Duplicate report', 'Insufficient evidence', 'Out of scope', 'Incorrect location', 'Fake/spam'];
 
 function verify() {
-    if (confirm('Are you sure you want to verify this report? It will become publicly visible.')) {
-        useForm({}).post(route('admin.reports.verify', props.report.id));
-    }
+    useForm({}).post(route('admin.reports.verify', props.report.id));
+    showVerifyModal.value = false;
 }
 
 function reject() {
     rejectForm.post(route('admin.reports.reject', props.report.id), {
-        onSuccess: () => {
-            showRejectModal.value = false;
-            rejectForm.reset();
-        },
+        onSuccess: () => { showRejectPanel.value = false; rejectForm.reset(); },
     });
 }
-
-const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    verified: 'bg-green-100 text-green-800',
-    rejected: 'bg-red-100 text-red-800',
-};
-
-const severityColors = {
-    low: 'bg-blue-100 text-blue-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-orange-100 text-orange-800',
-    critical: 'bg-red-100 text-red-800',
-};
 </script>
 
 <template>
-    <Head :title="`Review: ${report.title}`" />
-
-    <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center gap-4">
-                <Link :href="route('admin.reports.index')" class="text-gray-400 hover:text-gray-600">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+    <Head :title="`Review: ${report.title} — Safenix`" />
+    <AdminLayout>
+        <div class="space-y-6">
+            <!-- Back + title -->
+            <div class="flex items-center gap-3">
+                <Link :href="route('admin.reports.index')" class="text-ink-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-ink-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </Link>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Review Report</h2>
+                <div>
+                    <h1 class="font-display font-bold text-white text-xl">Review Report</h1>
+                    <p class="text-ink-400 text-xs font-data mt-0.5">#RPT-{{ String(report.id).padStart(4, '0') }}</p>
+                </div>
             </div>
-        </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8 space-y-6">
-                <!-- Report Details -->
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">{{ report.title }}</h3>
-                            <div class="mt-1 flex items-center gap-2 flex-wrap">
-                                <span :class="statusColors[report.status]"
-                                    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                    {{ report.status }}
-                                </span>
-                                <span :class="severityColors[report.severity]"
-                                    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize">
-                                    {{ report.severity }}
-                                </span>
+            <div class="grid lg:grid-cols-[1fr_300px] gap-6">
+                <!-- Left: report details -->
+                <div class="space-y-5">
+                    <!-- Title + badges -->
+                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-6">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="flex-1 min-w-0">
+                                <h2 class="font-display font-bold text-white text-lg leading-snug">{{ report.title }}</h2>
+                                <p class="text-ink-400 text-sm mt-1 font-data">
+                                    {{ report.district?.name }}<span v-if="report.upazila"> / {{ report.upazila.name }}</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <SeverityBadge :level="report.severity" size="md" />
+                                <StatusBadge :status="report.status" size="md" />
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div v-if="report.status === 'verified'" class="flex gap-2 flex-shrink-0">
-                            <Link :href="route('admin.assignments.create', report.id)"
-                                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-                                Assign Team
-                            </Link>
-                            <Link :href="route('admin.news.create', { from_report: report.id })"
-                                class="inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500">
-                                Convert to Article
-                            </Link>
-                        </div>
-                        <div v-if="report.status === 'pending'" class="flex gap-2 flex-shrink-0">
-                            <button @click="verify"
-                                class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500">
-                                Verify
-                            </button>
-                            <button @click="showRejectModal = true"
-                                class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">
-                                Reject
-                            </button>
+                        <!-- Meta grid -->
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-ink-700">
+                            <div>
+                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Category</p>
+                                <p class="text-white text-sm">{{ report.category?.name ?? '—' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Reported by</p>
+                                <p class="text-white text-sm">{{ report.user?.name }}</p>
+                                <p class="text-ink-500 text-xs font-data">{{ report.user?.email }}</p>
+                            </div>
+                            <div>
+                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Coordinates</p>
+                                <p class="text-bay-400 text-sm font-data">{{ report.latitude }}, {{ report.longitude }}</p>
+                            </div>
+                            <div>
+                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Submitted</p>
+                                <TimeAgo :date="report.created_at" />
+                                <p class="text-ink-500 text-xs font-data mt-0.5">{{ new Date(report.created_at).toLocaleString() }}</p>
+                            </div>
+                            <div v-if="report.address" class="col-span-2">
+                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Address</p>
+                                <p class="text-white text-sm">{{ report.address }}</p>
+                            </div>
                         </div>
                     </div>
 
-                    <dl class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Category</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ report.category?.name }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Location</dt>
-                            <dd class="mt-1 text-sm text-gray-900">
-                                {{ report.district?.name }}
-                                <span v-if="report.upazila"> / {{ report.upazila.name }}</span>
-                            </dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Address</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ report.address || 'N/A' }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Coordinates</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ report.latitude }}, {{ report.longitude }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Reported By</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ report.user?.name }} ({{ report.user?.email }})</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Submitted At</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ new Date(report.created_at).toLocaleString() }}</dd>
-                        </div>
-                        <div v-if="report.occurred_at">
-                            <dt class="text-sm font-medium text-gray-500">Occurred At</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ new Date(report.occurred_at).toLocaleString() }}</dd>
-                        </div>
-                        <div v-if="report.verified_by_user">
-                            <dt class="text-sm font-medium text-gray-500">Verified By</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ report.verified_by_user?.name }} at {{ new Date(report.verified_at).toLocaleString() }}</dd>
-                        </div>
-                    </dl>
-
-                    <div class="mt-6">
-                        <h4 class="text-sm font-medium text-gray-500">Description</h4>
-                        <p class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ report.description }}</p>
+                    <!-- Description -->
+                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-6">
+                        <h3 class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-3">Description</h3>
+                        <p class="text-white text-sm leading-relaxed whitespace-pre-wrap">{{ report.description }}</p>
                     </div>
 
-                    <!-- Media Gallery -->
-                    <div v-if="report.media && report.media.length" class="mt-6">
-                        <h4 class="text-sm font-medium text-gray-500">Attached Media</h4>
-                        <div class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                            <div v-for="m in report.media" :key="m.id">
-                                <a v-if="m.type === 'image'" :href="`/storage/${m.path}`" target="_blank">
-                                    <img :src="`/storage/${m.thumbnail_path || m.path}`"
-                                        class="h-32 w-full rounded-md object-cover hover:opacity-90 transition" />
-                                </a>
+                    <!-- Media gallery -->
+                    <div v-if="report.media?.length" class="bg-ink-800 rounded-xl border border-ink-600 p-6">
+                        <h3 class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-4">Evidence ({{ report.media.length }} file{{ report.media.length !== 1 ? 's' : '' }})</h3>
+                        <div class="flex gap-3 overflow-x-auto pb-2">
+                            <div v-for="m in report.media" :key="m.id" class="flex-shrink-0">
+                                <button v-if="m.type === 'image'" @click="lightboxSrc = `/storage/${m.path}`" class="block">
+                                    <img
+                                        :src="`/storage/${m.thumbnail_path || m.path}`"
+                                        class="w-36 h-28 rounded-lg object-cover ring-1 ring-ink-600 hover:ring-bay-500 transition-all"
+                                        alt="Report evidence"
+                                    />
+                                </button>
                                 <video v-else :src="`/storage/${m.path}`" controls
-                                    class="h-32 w-full rounded-md object-cover bg-black"></video>
+                                    class="w-36 h-28 rounded-lg object-cover bg-ink-900 ring-1 ring-ink-600"/>
                             </div>
                         </div>
                     </div>
 
-                    <div v-if="report.rejection_reason" class="mt-6 rounded-md bg-red-50 p-4">
-                        <h4 class="text-sm font-medium text-red-800">Rejection Reason</h4>
-                        <p class="mt-1 text-sm text-red-700">{{ report.rejection_reason }}</p>
+                    <!-- Rejection reason (if rejected) -->
+                    <div v-if="report.rejection_reason" class="bg-[#B03A4A]/10 border border-[#B03A4A]/30 rounded-xl p-5">
+                        <h3 class="text-[#B03A4A] text-xs font-semibold uppercase tracking-wider mb-2">Rejection reason</h3>
+                        <p class="text-white/80 text-sm">{{ report.rejection_reason }}</p>
+                    </div>
+
+                    <!-- Verified info -->
+                    <div v-if="report.verified_by_user" class="bg-[#157F6B]/10 border border-[#157F6B]/30 rounded-xl p-5">
+                        <h3 class="text-[#157F6B] text-xs font-semibold uppercase tracking-wider mb-2">Verified</h3>
+                        <p class="text-white/80 text-sm">
+                            By {{ report.verified_by_user.name }} · {{ new Date(report.verified_at).toLocaleString() }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right: action panel (sticky) -->
+                <div class="space-y-4">
+                    <!-- Inline reject panel -->
+                    <div v-if="showRejectPanel && report.status === 'pending'" class="bg-ink-800 rounded-xl border border-[#B03A4A]/40 p-5 space-y-4">
+                        <h3 class="font-display font-semibold text-white text-sm">Reject report</h3>
+                        <p class="text-ink-400 text-xs">The reporter will be notified with your reason.</p>
+
+                        <!-- Quick-pick chips -->
+                        <div class="flex flex-wrap gap-2">
+                            <button
+                                v-for="r in quickReasons" :key="r"
+                                @click="rejectForm.rejection_reason = r"
+                                :class="[
+                                    'text-xs px-3 py-1.5 rounded-full border transition-colors',
+                                    rejectForm.rejection_reason === r
+                                        ? 'bg-[#B03A4A] border-[#B03A4A] text-white'
+                                        : 'border-ink-600 text-ink-400 hover:text-white hover:border-ink-500',
+                                ]"
+                            >{{ r }}</button>
+                        </div>
+
+                        <textarea
+                            v-model="rejectForm.rejection_reason"
+                            rows="3"
+                            placeholder="Or type a custom reason…"
+                            class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0 resize-none"
+                        ></textarea>
+                        <p v-if="rejectForm.errors.rejection_reason" class="text-[#D62839] text-xs">{{ rejectForm.errors.rejection_reason }}</p>
+
+                        <div class="flex gap-2">
+                            <button @click="showRejectPanel = false; rejectForm.reset()"
+                                class="flex-1 text-sm font-medium text-ink-400 hover:text-white border border-ink-600 px-3 py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button @click="reject" :disabled="rejectForm.processing || !rejectForm.rejection_reason"
+                                class="flex-1 text-sm font-semibold text-white bg-[#B03A4A] hover:bg-[#D62839] disabled:opacity-50 px-3 py-2 rounded-lg transition-colors">
+                                {{ rejectForm.processing ? 'Rejecting…' : 'Confirm reject' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Primary action buttons -->
+                    <div v-if="report.status === 'pending'" class="bg-ink-800 rounded-xl border border-ink-600 p-5 space-y-3">
+                        <h3 class="font-display font-semibold text-white text-sm mb-1">Review actions</h3>
+                        <button @click="showVerifyModal = true"
+                            class="w-full flex items-center justify-center gap-2 bg-[#157F6B] hover:bg-[#2E9E6B] text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                            ✓ Verify report
+                        </button>
+                        <button @click="showRejectPanel = !showRejectPanel"
+                            class="w-full flex items-center justify-center gap-2 border border-[#B03A4A]/60 hover:bg-[#B03A4A]/10 text-[#B03A4A] hover:text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                            ✕ Reject report
+                        </button>
+                    </div>
+
+                    <!-- Post-verify actions -->
+                    <div v-if="report.status === 'verified'" class="bg-ink-800 rounded-xl border border-ink-600 p-5 space-y-3">
+                        <h3 class="font-display font-semibold text-white text-sm mb-1">Next steps</h3>
+                        <Link :href="route('admin.assignments.create', report.id)"
+                            class="w-full flex items-center justify-center gap-2 bg-bay-600 hover:bg-bay-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                            🚑 Assign rescue team
+                        </Link>
+                        <Link :href="route('admin.news.create', { from_report: report.id })"
+                            class="w-full flex items-center justify-center gap-2 border border-ink-600 hover:bg-ink-700 text-white font-medium py-3 rounded-xl transition-colors text-sm">
+                            📰 Convert to article
+                        </Link>
+                    </div>
+
+                    <!-- Reporter card -->
+                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
+                        <h3 class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-3">Reporter</h3>
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-bay-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                {{ report.user?.name?.charAt(0)?.toUpperCase() }}
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-medium">{{ report.user?.name }}</p>
+                                <p class="text-ink-400 text-xs font-data">{{ report.user?.email }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Reject Modal -->
+        <!-- Verify confirm modal -->
+        <ConfirmModal
+            :show="showVerifyModal"
+            title="Verify this report?"
+            description="This report will become publicly visible on the map and news feed. The reporter will be notified."
+            confirm-label="Verify report"
+            @confirm="verify"
+            @cancel="showVerifyModal = false"
+        />
+
+        <!-- Lightbox -->
         <Teleport to="body">
-            <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">Reject Report</h3>
-                    <p class="mt-1 text-sm text-gray-500">Please provide a reason for rejection. The user will be notified.</p>
-
-                    <textarea v-model="rejectForm.rejection_reason" rows="4"
-                        class="mt-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        placeholder="Reason for rejection..."></textarea>
-                    <p v-if="rejectForm.errors.rejection_reason" class="mt-1 text-sm text-red-600">{{ rejectForm.errors.rejection_reason }}</p>
-
-                    <div class="mt-4 flex justify-end gap-3">
-                        <button @click="showRejectModal = false; rejectForm.reset()"
-                            class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50">
-                            Cancel
-                        </button>
-                        <button @click="reject" :disabled="rejectForm.processing"
-                            class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:opacity-50">
-                            {{ rejectForm.processing ? 'Rejecting...' : 'Reject Report' }}
-                        </button>
-                    </div>
-                </div>
+            <div v-if="lightboxSrc" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" @click="lightboxSrc = null">
+                <img :src="lightboxSrc" class="max-h-full max-w-full rounded-xl object-contain" @click.stop />
+                <button @click="lightboxSrc = null" class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl">✕</button>
             </div>
         </Teleport>
-    </AuthenticatedLayout>
+    </AdminLayout>
 </template>

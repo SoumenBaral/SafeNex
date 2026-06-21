@@ -1,0 +1,11 @@
+{
+  "version": "0.2",
+  "words": [
+    "Safenix", "Bangla", "Siliguri", "Mirpur", "Sylhet", "Upazila", "upazila",
+    "Karim", "Sumi", "WCAG", "rgba", "wordmark", "grayscale", "lightbox",
+    "geolocation", "geocodes", "googlemaps", "markerclusterer", "Heroicon",
+    "Inertia", "Reverb", "spatie", "tailwindcss", "bangla", "fontsource",
+    "markercluster", "haversine"
+  ],
+  "ignorePaths": ["vendor/**", "node_modules/**", "*.lock"]
+}
