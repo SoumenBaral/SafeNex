@@ -1,13 +1,16 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+const roles = computed(() => usePage().props.auth.roles ?? []);
+const isAdmin = computed(() => roles.value.includes('admin'));
+const isResponder = computed(() => roles.value.includes('responder'));
 </script>
 
 <template>
@@ -30,14 +33,39 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <!-- Admin Nav -->
+                                <template v-if="isAdmin">
+                                    <NavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
+                                        Dashboard
+                                    </NavLink>
+                                    <NavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">
+                                        Reports
+                                    </NavLink>
+                                </template>
+
+                                <!-- Responder Nav -->
+                                <template v-else-if="isResponder">
+                                    <NavLink :href="route('responder.dashboard')" :active="route().current('responder.dashboard')">
+                                        Dashboard
+                                    </NavLink>
+                                </template>
+
+                                <!-- User Nav -->
+                                <template v-else>
+                                    <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                        Dashboard
+                                    </NavLink>
+                                    <NavLink :href="route('reports.create')" :active="route().current('reports.create')">
+                                        Submit Report
+                                    </NavLink>
+                                    <NavLink :href="route('my-reports')" :active="route().current('my-reports')">
+                                        My Reports
+                                    </NavLink>
+                                </template>
+
+                                <NavLink :href="route('news.index')" :active="route().current('news.*')">
+                                    News
                                 </NavLink>
                             </div>
                         </div>
@@ -140,12 +168,19 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
+                        <template v-if="isAdmin">
+                            <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">Dashboard</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('admin.reports.index')" :active="route().current('admin.reports.*')">Reports</ResponsiveNavLink>
+                        </template>
+                        <template v-else-if="isResponder">
+                            <ResponsiveNavLink :href="route('responder.dashboard')" :active="route().current('responder.dashboard')">Dashboard</ResponsiveNavLink>
+                        </template>
+                        <template v-else>
+                            <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('reports.create')" :active="route().current('reports.create')">Submit Report</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('my-reports')" :active="route().current('my-reports')">My Reports</ResponsiveNavLink>
+                        </template>
+                        <ResponsiveNavLink :href="route('news.index')" :active="route().current('news.*')">News</ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
