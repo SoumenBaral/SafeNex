@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\ReportVerified;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ReportController as UserReportController;
 use App\Models\Report;
 use App\Notifications\ReportApproved;
 use App\Notifications\ReportRejected;
@@ -51,8 +52,11 @@ class ReportController extends Controller
         $report->load('category:id,name,color', 'district:id,name', 'upazila:id,name');
         event(new ReportVerified($report));
 
-        // Notify the reporter
+        // Notify the reporter their report was approved
         $report->user->notify(new ReportApproved($report));
+
+        // Notify all other users about the new verified incident
+        UserReportController::notifyAllUsers($report);
 
         return back()->with('success', 'Report verified and now visible publicly.');
     }

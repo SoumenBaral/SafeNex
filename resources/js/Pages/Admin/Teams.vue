@@ -41,7 +41,7 @@ function deleteTeam() {
 const statusMap = {
     available: { label: 'Available', classes: 'bg-[#157F6B]/10 text-[#157F6B]' },
     busy:      { label: 'Busy',      classes: 'bg-[#E0A100]/10 text-[#E0A100]' },
-    offline:   { label: 'Offline',   classes: 'bg-gray-200 text-gray-500' },
+    offline:   { label: 'Offline',   classes: 'bg-ink-600 text-ink-400' },
 };
 </script>
 
@@ -82,7 +82,7 @@ const statusMap = {
                             <h3 class="font-display font-semibold text-white truncate">{{ team.name }}</h3>
                             <p class="text-ink-400 text-xs mt-0.5">{{ team.district?.name ?? 'No district' }}</p>
                         </div>
-                        <span :class="['text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0', statusMap[team.status]?.classes ?? 'bg-gray-200 text-gray-600']">
+                        <span :class="['text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0', statusMap[team.status]?.classes ?? 'bg-ink-600 text-ink-400']">
                             {{ statusMap[team.status]?.label ?? team.status }}
                         </span>
                     </div>
@@ -124,47 +124,47 @@ const statusMap = {
             <form @submit.prevent="submit" class="space-y-5">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Team name <span class="text-red-500">*</span></label>
-                        <input v-model="form.name" type="text" class="w-full rounded-lg border-gray-300 text-sm focus:border-bay-500 focus:ring-bay-500" placeholder="Mirpur Flood Unit" />
-                        <p v-if="form.errors.name" class="mt-1 text-xs text-red-600">{{ form.errors.name }}</p>
+                        <label class="block text-xs font-medium text-ink-300 uppercase tracking-wider mb-1.5">Team name <span class="text-[#D62839]">*</span></label>
+                        <input v-model="form.name" type="text" class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" placeholder="Mirpur Flood Unit" />
+                        <p v-if="form.errors.name" class="mt-1 text-xs text-[#D62839]">{{ form.errors.name }}</p>
                     </div>
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">District</label>
-                        <select v-model="form.district_id" class="w-full rounded-lg border-gray-300 text-sm focus:border-bay-500 focus:ring-bay-500">
+                        <label class="block text-xs font-medium text-ink-300 uppercase tracking-wider mb-1.5">District</label>
+                        <select v-model="form.district_id" class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 focus:border-bay-500 focus:ring-0">
                             <option value="">Select district</option>
                             <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Leader name <span class="text-red-500">*</span></label>
-                        <input v-model="form.leader_name" type="text" class="w-full rounded-lg border-gray-300 text-sm focus:border-bay-500 focus:ring-bay-500" />
+                        <label class="block text-xs font-medium text-ink-300 uppercase tracking-wider mb-1.5">Leader name <span class="text-[#D62839]">*</span></label>
+                        <input v-model="form.leader_name" type="text" class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Leader phone</label>
-                        <input v-model="form.leader_phone" type="text" class="w-full rounded-lg border-gray-300 text-sm focus:border-bay-500 focus:ring-bay-500" />
+                        <label class="block text-xs font-medium text-ink-300 uppercase tracking-wider mb-1.5">Leader phone</label>
+                        <input v-model="form.leader_phone" type="text" class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
                     </div>
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Leader email</label>
-                        <input v-model="form.leader_email" type="email" class="w-full rounded-lg border-gray-300 text-sm focus:border-bay-500 focus:ring-bay-500" />
+                        <label class="block text-xs font-medium text-ink-300 uppercase tracking-wider mb-1.5">Leader email</label>
+                        <input v-model="form.leader_email" type="email" class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
                     </div>
                 </div>
 
                 <!-- Members -->
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <label class="text-sm font-medium text-gray-700">Team members</label>
-                        <button type="button" @click="addMember" class="text-xs text-bay-600 hover:text-bay-700 font-medium">+ Add member</button>
+                        <label class="text-xs font-medium text-ink-300 uppercase tracking-wider">Team members</label>
+                        <button type="button" @click="addMember" class="text-xs text-bay-400 hover:text-bay-300 font-medium">+ Add member</button>
                     </div>
                     <div class="space-y-3">
-                        <div v-for="(member, i) in form.members" :key="i" class="bg-gray-50 rounded-xl p-3 space-y-2">
+                        <div v-for="(member, i) in form.members" :key="i" class="bg-ink-900 border border-ink-600 rounded-xl p-3 space-y-2">
                             <div class="grid grid-cols-2 gap-2">
-                                <input v-model="member.name"  type="text"  placeholder="Name *" class="rounded-lg border-gray-300 text-xs focus:border-bay-500 focus:ring-bay-500" />
-                                <input v-model="member.email" type="email" placeholder="Email *" class="rounded-lg border-gray-300 text-xs focus:border-bay-500 focus:ring-bay-500" />
-                                <input v-model="member.phone" type="text"  placeholder="Phone"   class="rounded-lg border-gray-300 text-xs focus:border-bay-500 focus:ring-bay-500" />
-                                <input v-model="member.role_in_team" type="text" placeholder="Role (Diver, Medic…)" class="rounded-lg border-gray-300 text-xs focus:border-bay-500 focus:ring-bay-500" />
+                                <input v-model="member.name"  type="text"  placeholder="Name *" class="bg-ink-800 border border-ink-600 rounded-lg text-white text-xs px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
+                                <input v-model="member.email" type="email" placeholder="Email *" class="bg-ink-800 border border-ink-600 rounded-lg text-white text-xs px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
+                                <input v-model="member.phone" type="text"  placeholder="Phone"   class="bg-ink-800 border border-ink-600 rounded-lg text-white text-xs px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
+                                <input v-model="member.role_in_team" type="text" placeholder="Role (Diver, Medic…)" class="bg-ink-800 border border-ink-600 rounded-lg text-white text-xs px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0" />
                             </div>
                             <button v-if="form.members.length > 1" type="button" @click="removeMember(i)"
-                                class="text-xs text-red-500 hover:text-red-700">Remove</button>
+                                class="text-xs text-[#D62839] hover:text-red-400">Remove</button>
                         </div>
                     </div>
                 </div>
@@ -172,7 +172,7 @@ const statusMap = {
 
             <template #footer>
                 <div class="flex gap-3">
-                    <button @click="showSlideOver = false; form.reset()" class="flex-1 text-sm font-medium text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                    <button @click="showSlideOver = false; form.reset()" class="flex-1 text-sm font-medium text-ink-300 border border-ink-600 px-4 py-2.5 rounded-xl hover:bg-ink-700 hover:text-white transition-colors">
                         Cancel
                     </button>
                     <button @click="submit" :disabled="form.processing"

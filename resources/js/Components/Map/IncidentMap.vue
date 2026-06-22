@@ -61,12 +61,7 @@ function addMarkers(incidents) {
     }
 }
 
-onMounted(() => {
-    if (!window.google) {
-        console.warn('Google Maps API not loaded.');
-        return;
-    }
-
+function initMap() {
     map = new google.maps.Map(mapContainer.value, {
         center: props.center,
         zoom: props.zoom,
@@ -77,6 +72,20 @@ onMounted(() => {
     if (props.incidents.length) {
         addMarkers(props.incidents);
     }
+}
+
+onMounted(() => {
+    if (window.google?.maps) {
+        initMap();
+        return;
+    }
+    // Google Maps loads async — poll until ready
+    const poll = setInterval(() => {
+        if (window.google?.maps) {
+            clearInterval(poll);
+            initMap();
+        }
+    }, 100);
 });
 
 watch(() => props.incidents, (val) => {

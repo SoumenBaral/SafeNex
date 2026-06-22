@@ -20,7 +20,7 @@ const statusMap = {
     en_route:  { label: 'En route',  classes: 'bg-[#E5611F]/10 text-[#E5611F]',  dot: 'bg-[#E5611F]' },
     on_site:   { label: 'On site',   classes: 'bg-[#D62839]/10 text-[#D62839]',  dot: 'bg-[#D62839]' },
     completed: { label: 'Completed', classes: 'bg-[#157F6B]/10 text-[#157F6B]',  dot: 'bg-[#157F6B]' },
-    cancelled: { label: 'Cancelled', classes: 'bg-gray-100 text-gray-500',        dot: 'bg-gray-400' },
+    cancelled: { label: 'Cancelled', classes: 'bg-gray-200/10 text-gray-400',      dot: 'bg-gray-400' },
 };
 
 function updateStatus(assignment, newStatus) {

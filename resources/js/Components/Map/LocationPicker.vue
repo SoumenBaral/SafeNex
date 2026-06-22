@@ -15,12 +15,7 @@ const mapContainer = ref(null);
 let map = null;
 let marker = null;
 
-onMounted(() => {
-    if (!window.google) {
-        console.warn('Google Maps API not loaded. Add your API key to the layout.');
-        return;
-    }
-
+function initMap() {
     const center = { lat: Number(props.modelValue.lat) || 23.8103, lng: Number(props.modelValue.lng) || 90.4125 };
 
     map = new google.maps.Map(mapContainer.value, {
@@ -45,6 +40,19 @@ onMounted(() => {
         marker.setPosition(e.latLng);
         emit('update:modelValue', { lat: e.latLng.lat().toFixed(7), lng: e.latLng.lng().toFixed(7) });
     });
+}
+
+onMounted(() => {
+    if (window.google?.maps) {
+        initMap();
+        return;
+    }
+    const poll = setInterval(() => {
+        if (window.google?.maps) {
+            clearInterval(poll);
+            initMap();
+        }
+    }, 100);
 });
 
 watch(() => props.modelValue, (val) => {

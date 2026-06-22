@@ -92,27 +92,27 @@ defineProps({
                     <!-- Right: live stat cards -->
                     <div class="hidden lg:grid grid-cols-2 gap-4">
                         <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
-                            <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-2">Total Reports</p>
+                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Total Reports</p>
                             <p class="font-data text-3xl font-semibold text-white">{{ stats?.total_reports ?? '—' }}</p>
-                            <p class="text-ink-500 text-xs mt-1 font-data">across all districts</p>
+                            <p class="text-gray-400 text-xs mt-1 font-data">across all districts</p>
                         </div>
                         <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
-                            <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-2">Verified</p>
+                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Verified</p>
                             <p class="font-data text-3xl font-semibold text-[#2E9E6B]">{{ stats?.verified_reports ?? '—' }}</p>
-                            <p class="text-ink-500 text-xs mt-1 font-data">publicly visible</p>
+                            <p class="text-gray-400 text-xs mt-1 font-data">publicly visible</p>
                         </div>
                         <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
-                            <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-2">Districts</p>
+                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Districts</p>
                             <p class="font-data text-3xl font-semibold text-bay-400">64</p>
-                            <p class="text-ink-500 text-xs mt-1 font-data">covered nationwide</p>
+                            <p class="text-gray-400 text-xs mt-1 font-data">covered nationwide</p>
                         </div>
                         <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
-                            <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-2">Status</p>
+                            <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Status</p>
                             <div class="flex items-center gap-1.5 mt-1">
                                 <span class="w-2 h-2 rounded-full bg-[#2E9E6B] animate-pulse"></span>
                                 <span class="text-[#2E9E6B] font-data text-sm">System live</span>
                             </div>
-                            <p class="text-ink-500 text-xs mt-1 font-data">Real-time updates</p>
+                            <p class="text-gray-400 text-xs mt-1 font-data">Real-time updates</p>
                         </div>
                     </div>
                 </div>
@@ -128,19 +128,19 @@ defineProps({
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
                     <div>
                         <p class="font-data text-2xl font-semibold text-white">{{ stats?.total_reports ?? 0 }}</p>
-                        <p class="text-gray-500 text-xs mt-1">Reports submitted</p>
+                        <p class="text-gray-400 text-xs mt-1">Reports submitted</p>
                     </div>
                     <div>
                         <p class="font-data text-2xl font-semibold text-[#2E9E6B]">{{ stats?.verified_reports ?? 0 }}</p>
-                        <p class="text-gray-500 text-xs mt-1">Verified incidents</p>
+                        <p class="text-gray-400 text-xs mt-1">Verified incidents</p>
                     </div>
                     <div>
                         <p class="font-data text-2xl font-semibold text-bay-400">64</p>
-                        <p class="text-gray-500 text-xs mt-1">Districts covered</p>
+                        <p class="text-gray-400 text-xs mt-1">Districts covered</p>
                     </div>
                     <div>
                         <p class="font-data text-2xl font-semibold text-white">24/7</p>
-                        <p class="text-gray-500 text-xs mt-1">Live monitoring</p>
+                        <p class="text-gray-400 text-xs mt-1">Live monitoring</p>
                     </div>
                 </div>
             </div>
@@ -235,12 +235,12 @@ defineProps({
                         <div class="w-6 h-6 rounded-md bg-bay-600 flex items-center justify-center text-white text-xs font-bold font-display">S</div>
                         <span class="text-white font-display font-bold text-sm">Safenix</span>
                     </div>
-                    <p class="text-ink-500 text-xs font-data text-center">
+                    <p class="text-ink-300 text-xs font-data text-center">
                         Built by Nurnahar Nuri (210147) &amp; Riazul Islam Mubin (210161) · DIIT CSE
                     </p>
                     <div class="flex items-center gap-4">
-                        <Link :href="route('map')" class="text-ink-500 hover:text-white text-xs transition-colors">Live Map</Link>
-                        <Link :href="route('news.index')" class="text-ink-500 hover:text-white text-xs transition-colors">News</Link>
+                        <Link :href="route('map')" class="text-ink-300 hover:text-white text-xs transition-colors">Live Map</Link>
+                        <Link :href="route('news.index')" class="text-ink-300 hover:text-white text-xs transition-colors">News</Link>
                     </div>
                 </div>
             </div>

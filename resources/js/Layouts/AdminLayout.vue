@@ -45,7 +45,7 @@ const nav = [
             </div>
             <div class="flex items-center gap-3">
                 <NotificationBell />
-                <span class="font-data text-xs text-ink-500">{{ clock }}</span>
+                <span class="font-data text-xs text-ink-300">{{ clock }}</span>
             </div>
         </div>
 
@@ -64,7 +64,7 @@ const nav = [
                         <div class="w-7 h-7 rounded-md bg-bay-600 flex items-center justify-center text-white text-xs font-bold font-display">S</div>
                         <span class="text-white font-display font-bold text-base tracking-tight">Safenix</span>
                     </Link>
-                    <p class="text-ink-500 text-xs mt-0.5 font-data">Admin Panel</p>
+                    <p class="text-ink-300 text-xs mt-0.5 font-data">Admin Panel</p>
                 </div>
 
                 <!-- Nav -->

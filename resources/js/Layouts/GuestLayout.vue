@@ -18,7 +18,7 @@ import { Link } from '@inertiajs/vue3';
                     <div class="w-9 h-9 rounded-xl bg-bay-600 flex items-center justify-center text-white font-bold font-display text-lg">S</div>
                     <span class="text-white font-display font-bold text-xl tracking-tight">Safenix</span>
                 </Link>
-                <p class="text-ink-500 text-xs font-data">Disaster Monitoring Platform</p>
+                <p class="text-ink-300 text-xs font-data">Disaster Monitoring Platform</p>
             </div>
 
             <div class="relative">
@@ -31,7 +31,7 @@ import { Link } from '@inertiajs/vue3';
             </div>
 
             <div class="relative">
-                <div class="flex items-center gap-1.5 text-xs text-ink-500 font-data">
+                <div class="flex items-center gap-1.5 text-xs text-ink-300 font-data">
                     <span class="w-1.5 h-1.5 rounded-full bg-bay-500 animate-pulse inline-block"></span>
                     Live monitoring · 64 districts
                 </div>

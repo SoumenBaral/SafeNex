@@ -4,7 +4,7 @@ import StepIndicator from '@/Components/UI/StepIndicator.vue';
 import LocationPicker from '@/Components/Map/LocationPicker.vue';
 import MediaUploader from '@/Components/Report/MediaUploader.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 
 const props = defineProps({
     categories: Array,
@@ -72,11 +72,39 @@ function useMyLocation() {
     );
 }
 
-function nextStep() { if (currentStep.value < 3) currentStep.value++; }
-function prevStep() { if (currentStep.value > 1) currentStep.value--; }
+const stepErrors = ref('');
+
+function nextStep() {
+    stepErrors.value = '';
+    if (currentStep.value === 1) {
+        if (!form.category_id) { stepErrors.value = 'Please select a disaster type.'; return; }
+        if (!form.title.trim()) { stepErrors.value = 'Please enter a title.'; return; }
+        if (!form.description.trim()) { stepErrors.value = 'Please enter a description.'; return; }
+    }
+    if (currentStep.value === 2) {
+        if (!form.district_id) { stepErrors.value = 'Please select a district.'; return; }
+    }
+    if (currentStep.value < 3) currentStep.value++;
+}
+
+function prevStep() {
+    stepErrors.value = '';
+    if (currentStep.value > 1) currentStep.value--;
+}
 
 function submit() {
-    form.post(route('reports.store'), { forceFormData: true });
+    stepErrors.value = '';
+    form.post(route('reports.store'), {
+        forceFormData: true,
+        onError: () => {
+            // Navigate back to first step with errors
+            if (form.errors.category_id || form.errors.title || form.errors.description || form.errors.severity) {
+                currentStep.value = 1;
+            } else if (form.errors.district_id || form.errors.latitude || form.errors.longitude) {
+                currentStep.value = 2;
+            }
+        },
+    });
 }
 </script>
 
@@ -226,6 +254,11 @@ function submit() {
                             <p class="text-gray-500 text-sm">Photos and video help admins verify faster. Optional but recommended.</p>
                         </div>
                         <MediaUploader v-model="form.media" :errors="form.errors" />
+                    </div>
+
+                    <!-- Step / server errors -->
+                    <div v-if="stepErrors || Object.keys(form.errors).length" class="mx-6 mb-0 mt-0 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+                        {{ stepErrors || Object.values(form.errors)[0] }}
                     </div>
 
                     <!-- ── Navigation footer ── -->

@@ -32,7 +32,7 @@ const assignmentStatusMap = {
     en_route:  { label: 'En route',   classes: 'bg-[#E5611F]/10 text-[#E5611F]' },
     on_site:   { label: 'On site',    classes: 'bg-[#D62839]/10 text-[#D62839]' },
     completed: { label: 'Completed',  classes: 'bg-[#157F6B]/10 text-[#157F6B]' },
-    cancelled: { label: 'Cancelled',  classes: 'bg-gray-200 text-gray-500' },
+    cancelled: { label: 'Cancelled',  classes: 'bg-ink-600 text-ink-400' },
 };
 </script>
 

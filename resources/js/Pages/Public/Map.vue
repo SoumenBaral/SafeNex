@@ -62,13 +62,13 @@ const highCount     = computed(() => props.incidents.filter(i => i.severity === 
                 </span>
             </div>
             <div class="flex items-center gap-4">
-                <Link :href="route('news.index')" class="text-ink-400 hover:text-white text-xs transition-colors">News</Link>
+                <Link :href="route('news.index')" class="text-white hover:text-white text-xs transition-colors">News</Link>
                 <Link v-if="$page.props.auth?.user" :href="route('dashboard')"
                     class="bg-bay-600 hover:bg-bay-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
                     Dashboard
                 </Link>
-                <Link v-else :href="route('login')" class="text-ink-400 hover:text-white text-xs transition-colors">Sign in</Link>
-                <span class="font-data text-xs text-ink-500 hidden sm:block">{{ clock }}</span>
+                <Link v-else :href="route('login')" class="text-white hover:text-white text-xs transition-colors">Sign in</Link>
+                <span class="font-data text-xs text-white hidden sm:block">{{ clock }}</span>
             </div>
         </div>
 
@@ -83,10 +83,10 @@ const highCount     = computed(() => props.incidents.filter(i => i.severity === 
             >
                 <div class="p-4 space-y-5 overflow-y-auto dark-scroll flex-1">
                     <div>
-                        <p class="text-ink-400 text-xs font-semibold uppercase tracking-wider mb-2">Filters</p>
+                        <p class="text-white text-xs font-semibold uppercase tracking-wider mb-2">Filters</p>
                         <div class="space-y-3">
                             <div>
-                                <label class="text-ink-400 text-xs mb-1 block">District</label>
+                                <label class="text-white text-xs mb-1 block">District</label>
                                 <select v-model="districtFilter" @change="applyFilters"
                                     class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-xs px-3 py-2 focus:border-bay-500 focus:ring-0">
                                     <option value="">All districts</option>
@@ -94,7 +94,7 @@ const highCount     = computed(() => props.incidents.filter(i => i.severity === 
                                 </select>
                             </div>
                             <div>
-                                <label class="text-ink-400 text-xs mb-1 block">Type</label>
+                                <label class="text-white text-xs mb-1 block">Type</label>
                                 <select v-model="categoryFilter" @change="applyFilters"
                                     class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-xs px-3 py-2 focus:border-bay-500 focus:ring-0">
                                     <option value="">All types</option>
@@ -110,23 +110,23 @@ const highCount     = computed(() => props.incidents.filter(i => i.severity === 
 
                     <!-- Legend -->
                     <div>
-                        <p class="text-ink-400 text-xs font-semibold uppercase tracking-wider mb-3">Severity legend</p>
+                        <p class="text-white text-xs font-semibold uppercase tracking-wider mb-3">Severity legend</p>
                         <div class="space-y-2">
                             <div class="flex items-center gap-2 text-xs">
                                 <span class="text-[#2E9E6B] w-4">●</span>
-                                <span class="text-ink-300">Low</span>
+                                <span class="text-white">Low</span>
                             </div>
                             <div class="flex items-center gap-2 text-xs">
                                 <span class="text-[#E0A100] w-4">△</span>
-                                <span class="text-ink-300">Medium</span>
+                                <span class="text-white">Medium</span>
                             </div>
                             <div class="flex items-center gap-2 text-xs">
                                 <span class="text-[#E5611F] w-4">▲</span>
-                                <span class="text-ink-300">High</span>
+                                <span class="text-white">High</span>
                             </div>
                             <div class="flex items-center gap-2 text-xs">
                                 <span class="text-[#D62839] w-4 animate-pulse">◆</span>
-                                <span class="text-ink-300">Critical</span>
+                                <span class="text-white">Critical</span>
                             </div>
                         </div>
                     </div>
