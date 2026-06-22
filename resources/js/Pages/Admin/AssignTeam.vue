@@ -32,7 +32,7 @@ const assignmentStatusMap = {
     en_route:  { label: 'En route',   classes: 'bg-[#E5611F]/10 text-[#E5611F]' },
     on_site:   { label: 'On site',    classes: 'bg-[#D62839]/10 text-[#D62839]' },
     completed: { label: 'Completed',  classes: 'bg-[#157F6B]/10 text-[#157F6B]' },
-    cancelled: { label: 'Cancelled',  classes: 'bg-ink-600 text-ink-400' },
+    cancelled: { label: 'Cancelled',  classes: 'bg-gray-100 text-gray-500' },
 };
 </script>
 
@@ -42,12 +42,12 @@ const assignmentStatusMap = {
         <div class="space-y-6">
             <!-- Back + header -->
             <div class="flex items-center gap-3">
-                <Link :href="route('admin.reports.show', report.id)" class="text-ink-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-ink-700">
+                <Link :href="route('admin.reports.show', report.id)" class="text-gray-500 hover:text-gray-900 transition-colors p-1.5 rounded-lg hover:bg-gray-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </Link>
                 <div>
-                    <h1 class="font-display font-bold text-white text-xl">Assign rescue team</h1>
-                    <p class="text-ink-400 text-xs font-data mt-0.5">#RPT-{{ String(report.id).padStart(4, '0') }}</p>
+                    <h1 class="font-display font-bold text-gray-900 text-xl">Assign rescue team</h1>
+                    <p class="text-gray-500 text-xs font-data mt-0.5">#RPT-{{ String(report.id).padStart(4, '0') }}</p>
                 </div>
             </div>
 
@@ -55,30 +55,30 @@ const assignmentStatusMap = {
                 <!-- Left: incident summary + assignments -->
                 <div class="space-y-5">
                     <!-- Incident card -->
-                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
                         <div class="flex items-start gap-3 mb-4">
                             <div class="flex-1 min-w-0">
-                                <h2 class="font-display font-semibold text-white">{{ report.title }}</h2>
-                                <p class="text-ink-400 text-xs mt-1 font-data">
+                                <h2 class="font-display font-semibold text-gray-900">{{ report.title }}</h2>
+                                <p class="text-gray-500 text-xs mt-1 font-data">
                                     {{ report.district?.name }}<span v-if="report.upazila"> / {{ report.upazila.name }}</span>
                                     · {{ report.category?.name }}
                                 </p>
                             </div>
                             <SeverityBadge :level="report.severity" size="md" />
                         </div>
-                        <p class="text-ink-300 text-sm leading-relaxed">{{ report.description }}</p>
-                        <p class="font-data text-xs text-bay-400 mt-3">{{ report.latitude }}, {{ report.longitude }}</p>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ report.description }}</p>
+                        <p class="font-data text-xs text-bay-600 mt-3">{{ report.latitude }}, {{ report.longitude }}</p>
                     </div>
 
                     <!-- Existing assignments -->
-                    <div v-if="existingAssignments.length" class="bg-ink-800 rounded-xl border border-ink-600 overflow-hidden">
-                        <div class="px-5 py-4 border-b border-ink-700">
-                            <h3 class="font-display font-semibold text-white text-sm">Previous assignments</h3>
+                    <div v-if="existingAssignments.length" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-200">
+                            <h3 class="font-display font-semibold text-gray-900 text-sm">Previous assignments</h3>
                         </div>
-                        <div class="divide-y divide-ink-700">
+                        <div class="divide-y divide-gray-200">
                             <div v-for="a in existingAssignments" :key="a.id" class="px-5 py-4">
                                 <div class="flex items-center justify-between gap-3 mb-2">
-                                    <span class="text-white font-medium text-sm">{{ a.team?.name }}</span>
+                                    <span class="text-gray-900 font-medium text-sm">{{ a.team?.name }}</span>
                                     <div class="flex items-center gap-2">
                                         <span v-if="a.emailed_at" class="text-xs text-[#157F6B] font-medium">✓ Emailed</span>
                                         <span :class="['text-xs font-medium px-2.5 py-1 rounded-full', assignmentStatusMap[a.status]?.classes]">
@@ -86,8 +86,8 @@ const assignmentStatusMap = {
                                         </span>
                                     </div>
                                 </div>
-                                <p class="text-ink-400 text-xs leading-relaxed">{{ a.reason }}</p>
-                                <div class="flex items-center gap-2 mt-2 text-xs text-ink-500 font-data">
+                                <p class="text-gray-500 text-xs leading-relaxed">{{ a.reason }}</p>
+                                <div class="flex items-center gap-2 mt-2 text-xs text-gray-400 font-data">
                                     <span>Assigned by {{ a.assigned_by_user?.name }}</span>
                                     <span>·</span>
                                     <TimeAgo :date="a.created_at" />
@@ -98,21 +98,21 @@ const assignmentStatusMap = {
                 </div>
 
                 <!-- Right: assign form -->
-                <div class="bg-ink-800 rounded-xl border border-ink-600 overflow-hidden lg:sticky lg:top-6">
-                    <div class="px-5 py-4 border-b border-ink-700">
-                        <h3 class="font-display font-semibold text-white text-sm">🚑 Assign a team</h3>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden lg:sticky lg:top-6">
+                    <div class="px-5 py-4 border-b border-gray-200">
+                        <h3 class="font-display font-semibold text-gray-900 text-sm">🚑 Assign a team</h3>
                     </div>
 
                     <div v-if="!teams.length" class="p-6 text-center">
-                        <p class="text-ink-400 text-sm mb-3">No available teams.</p>
-                        <Link :href="route('admin.teams.index')" class="text-bay-400 hover:text-bay-300 text-sm font-medium">Create a team first →</Link>
+                        <p class="text-gray-500 text-sm mb-3">No available teams.</p>
+                        <Link :href="route('admin.teams.index')" class="text-bay-600 hover:text-bay-700 text-sm font-medium">Create a team first →</Link>
                     </div>
 
                     <form v-else @submit.prevent="showConfirm = true" class="p-5 space-y-4">
                         <div>
-                            <label class="block text-ink-300 text-xs font-medium mb-1.5">Select team <span class="text-[#D62839]">*</span></label>
+                            <label class="block text-gray-600 text-xs font-medium mb-1.5">Select team <span class="text-[#D62839]">*</span></label>
                             <select v-model="form.rescue_team_id"
-                                class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 focus:border-bay-500 focus:ring-0">
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm px-3 py-2 focus:border-bay-500 focus:ring-0">
                                 <option value="">Choose a team</option>
                                 <option v-for="team in teams" :key="team.id" :value="team.id">
                                     {{ team.name }} ({{ team.members_count }} members){{ team.district ? ' · ' + team.district.name : '' }}
@@ -122,21 +122,21 @@ const assignmentStatusMap = {
                         </div>
 
                         <!-- Team members preview -->
-                        <div v-if="selectedTeam?.members?.length" class="bg-ink-900 rounded-lg px-4 py-3 border border-ink-600">
-                            <p class="text-ink-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        <div v-if="selectedTeam?.members?.length" class="bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
+                            <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">
                                 {{ selectedTeam.members.length }} member{{ selectedTeam.members.length !== 1 ? 's' : '' }} will be emailed:
                             </p>
                             <div class="space-y-1">
-                                <p v-for="m in selectedTeam.members" :key="m.id" class="text-ink-300 text-xs">
-                                    · {{ m.name }}<span v-if="m.role_in_team" class="text-ink-500"> ({{ m.role_in_team }})</span>
+                                <p v-for="m in selectedTeam.members" :key="m.id" class="text-gray-600 text-xs">
+                                    · {{ m.name }}<span v-if="m.role_in_team" class="text-gray-400"> ({{ m.role_in_team }})</span>
                                 </p>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-ink-300 text-xs font-medium mb-1.5">Assignment reason <span class="text-[#D62839]">*</span></label>
+                            <label class="block text-gray-600 text-xs font-medium mb-1.5">Assignment reason <span class="text-[#D62839]">*</span></label>
                             <textarea v-model="form.reason" rows="4"
-                                class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0 resize-none"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm px-3 py-2 placeholder-gray-400 focus:border-bay-500 focus:ring-0 resize-none"
                                 placeholder="Describe the situation and instructions for the team…"></textarea>
                             <p v-if="form.errors.reason" class="mt-1 text-xs text-[#D62839]">{{ form.errors.reason }}</p>
                         </div>

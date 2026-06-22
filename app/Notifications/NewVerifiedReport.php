@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Report;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 class NewVerifiedReport extends Notification implements ShouldQueue
@@ -30,8 +31,8 @@ class NewVerifiedReport extends Notification implements ShouldQueue
         ];
     }
 
-    public function toBroadcast(object $notifiable): array
+    public function toBroadcast(object $notifiable): BroadcastMessage
     {
-        return $this->toArray($notifiable);
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

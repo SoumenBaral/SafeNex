@@ -40,8 +40,8 @@ function doDelete() {
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="font-display font-bold text-white text-2xl">News Management</h1>
-                    <p class="text-ink-400 text-sm mt-1">Manage published articles and drafts</p>
+                    <h1 class="font-display font-bold text-gray-900 text-2xl">News Management</h1>
+                    <p class="text-gray-500 text-sm mt-1">Manage published articles and drafts</p>
                 </div>
                 <Link :href="route('admin.news.create')"
                     class="inline-flex items-center gap-2 bg-bay-600 hover:bg-bay-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm">
@@ -51,36 +51,36 @@ function doDelete() {
             </div>
 
             <!-- Filter tabs -->
-            <div class="inline-flex bg-ink-800 rounded-xl p-1 border border-ink-600">
+            <div class="inline-flex bg-white rounded-xl p-1 border border-gray-200 shadow-sm">
                 <button v-for="tab in tabs" :key="tab.value"
                     @click="filterByStatus(tab.value)"
                     :class="[
                         'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors',
                         (currentStatus ?? 'all') === tab.value
                             ? 'bg-bay-600 text-white shadow-sm'
-                            : 'text-ink-400 hover:text-white',
+                            : 'text-gray-500 hover:text-gray-900',
                     ]">
                     {{ tab.label }}
                 </button>
             </div>
 
             <!-- Articles list -->
-            <div class="bg-ink-800 rounded-xl border border-ink-600 overflow-hidden">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <!-- Empty state -->
                 <div v-if="!articles.data.length" class="py-16 flex flex-col items-center justify-center">
                     <p class="text-3xl mb-3">📰</p>
-                    <p class="text-ink-300 font-semibold text-sm">No articles found</p>
-                    <p class="text-ink-500 text-xs mt-1">
+                    <p class="text-gray-600 font-semibold text-sm">No articles found</p>
+                    <p class="text-gray-400 text-xs mt-1">
                         {{ currentStatus === 'draft' ? 'No drafts saved.' : currentStatus === 'published' ? 'No published articles yet.' : 'Write the first article.' }}
                     </p>
                 </div>
 
-                <div v-else class="divide-y divide-ink-700">
+                <div v-else class="divide-y divide-gray-200">
                     <div v-for="article in articles.data" :key="article.id"
-                        class="flex items-start gap-4 px-5 py-4 hover:bg-ink-700/40 transition-colors">
+                        class="flex items-start gap-4 px-5 py-4 hover:bg-gray-50 transition-colors">
 
                         <!-- Cover thumbnail -->
-                        <div class="w-16 h-14 rounded-lg overflow-hidden bg-ink-900 flex-shrink-0">
+                        <div class="w-16 h-14 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                             <img v-if="article.cover_image"
                                 :src="`/storage/${article.cover_image}`"
                                 :alt="article.title"
@@ -95,16 +95,16 @@ function doDelete() {
                                     'text-xs font-semibold px-2 py-0.5 rounded-full',
                                     article.status === 'published'
                                         ? 'bg-[#157F6B]/15 text-[#157F6B]'
-                                        : 'bg-ink-600 text-ink-400',
+                                        : 'bg-gray-100 text-gray-500',
                                 ]">
                                     {{ article.status === 'published' ? '✓ Published' : '⏸ Draft' }}
                                 </span>
-                                <span v-if="article.category" class="text-xs text-bay-400 font-medium">{{ article.category.name }}</span>
-                                <span v-if="article.district" class="text-xs text-ink-500 font-data">· {{ article.district.name }}</span>
+                                <span v-if="article.category" class="text-xs text-bay-600 font-medium">{{ article.category.name }}</span>
+                                <span v-if="article.district" class="text-xs text-gray-400 font-data">· {{ article.district.name }}</span>
                             </div>
-                            <h3 class="font-display font-semibold text-white text-sm leading-snug line-clamp-1">{{ article.title }}</h3>
-                            <p v-if="article.excerpt" class="text-ink-400 text-xs mt-0.5 line-clamp-1">{{ article.excerpt }}</p>
-                            <div class="flex items-center gap-3 mt-1.5 font-data text-xs text-ink-500">
+                            <h3 class="font-display font-semibold text-gray-900 text-sm leading-snug line-clamp-1">{{ article.title }}</h3>
+                            <p v-if="article.excerpt" class="text-gray-500 text-xs mt-0.5 line-clamp-1">{{ article.excerpt }}</p>
+                            <div class="flex items-center gap-3 mt-1.5 font-data text-xs text-gray-400">
                                 <span>{{ article.author?.name ?? 'Admin' }}</span>
                                 <span>·</span>
                                 <span>{{ article.views }} views</span>
@@ -118,17 +118,17 @@ function doDelete() {
                             <Link v-if="article.status === 'published'"
                                 :href="route('news.show', article.slug)"
                                 target="_blank"
-                                class="p-2 text-ink-400 hover:text-bay-400 hover:bg-ink-700 rounded-lg transition-colors"
+                                class="p-2 text-gray-500 hover:text-bay-600 hover:bg-gray-100 rounded-lg transition-colors"
                                 title="View public">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                             </Link>
                             <Link :href="route('admin.news.edit', article.id)"
-                                class="p-2 text-ink-400 hover:text-white hover:bg-ink-700 rounded-lg transition-colors"
+                                class="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                                 title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </Link>
                             <button @click="confirmDelete(article.id)"
-                                class="p-2 text-ink-400 hover:text-[#D62839] hover:bg-ink-700 rounded-lg transition-colors"
+                                class="p-2 text-gray-500 hover:text-[#D62839] hover:bg-gray-100 rounded-lg transition-colors"
                                 title="Delete">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
@@ -143,7 +143,7 @@ function doDelete() {
                     :href="link.url ?? '#'"
                     :class="[
                         'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                        link.active ? 'bg-bay-600 text-white' : 'text-ink-400 hover:bg-ink-700 hover:text-white',
+                        link.active ? 'bg-bay-600 text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
                         !link.url   ? 'opacity-40 pointer-events-none' : '',
                     ]"
                     v-html="link.label"

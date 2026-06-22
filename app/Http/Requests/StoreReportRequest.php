@@ -24,7 +24,7 @@ class StoreReportRequest extends FormRequest
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'severity' => ['required', Rule::in(['low', 'medium', 'high', 'critical'])],
-            'occurred_at' => 'nullable|date|before_or_equal:now',
+            'occurred_at' => 'nullable|date',
             'media' => 'nullable|array|max:6',
             'media.*' => 'file|mimes:jpg,jpeg,png,webp,mp4|max:30720',
         ];

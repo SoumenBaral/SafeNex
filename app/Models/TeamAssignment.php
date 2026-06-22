@@ -26,7 +26,7 @@ class TeamAssignment extends Model
         return $this->belongsTo(RescueTeam::class, 'rescue_team_id');
     }
 
-    public function assignedBy(): BelongsTo
+    public function assignedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_by');
     }

@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Alert;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 class EmergencyAlert extends Notification implements ShouldQueue
@@ -21,10 +22,16 @@ class EmergencyAlert extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
+            'type' => 'emergency_alert',
             'alert_id' => $this->alert->id,
             'title' => $this->alert->title,
             'message' => $this->alert->message,
             'district' => $this->alert->district?->name,
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

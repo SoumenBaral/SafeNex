@@ -25,7 +25,7 @@ class AssignmentController extends Controller
                 ->withCount('members')
                 ->get(),
             'existingAssignments' => $report->assignments()
-                ->with('team:id,name', 'assignedBy:id,name')
+                ->with('team:id,name', 'assignedByUser:id,name')
                 ->latest()
                 ->get(),
         ]);

@@ -42,6 +42,11 @@ Route::get('/dashboard', function () {
             'verified' => $user->reports()->where('status', 'verified')->count(),
             'rejected' => $user->reports()->where('status', 'rejected')->count(),
         ],
+        'recentReports' => $user->reports()
+            ->with('category:id,name,slug,color', 'district:id,name')
+            ->latest()
+            ->take(5)
+            ->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -63,16 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Admin routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', function () {
-        return Inertia::render('Admin/Dashboard', [
-            'stats' => [
-                'pending_reports' => \App\Models\Report::where('status', 'pending')->count(),
-                'verified_reports' => \App\Models\Report::where('status', 'verified')->count(),
-                'total_reports' => \App\Models\Report::count(),
-                'total_users' => \App\Models\User::count(),
-                'total_teams' => \App\Models\RescueTeam::count(),
-                'published_news' => \App\Models\NewsArticle::where('status', 'published')->count(),
-            ],
-        ]);
+        return redirect()->route('admin.reports.index');
     })->name('dashboard');
 
     Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');

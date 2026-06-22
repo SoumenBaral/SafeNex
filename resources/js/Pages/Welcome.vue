@@ -30,7 +30,8 @@ defineProps({
                             News
                         </Link>
                         <template v-if="canLogin">
-                            <Link v-if="$page.props.auth.user" :href="route('dashboard')"
+                            <Link v-if="$page.props.auth.user"
+                                :href="$page.props.auth.roles?.includes('admin') ? route('admin.dashboard') : $page.props.auth.roles?.includes('responder') ? route('responder.dashboard') : route('dashboard')"
                                 class="px-4 py-2 text-sm font-medium bg-bay-600 hover:bg-bay-700 text-white rounded-lg transition-colors">
                                 Dashboard
                             </Link>
@@ -50,7 +51,7 @@ defineProps({
         </nav>
 
         <!-- Hero -->
-        <section class="relative bg-ink-900 overflow-hidden">
+        <section class="relative bg-gray-900 overflow-hidden">
             <!-- Subtle grid pattern -->
             <div class="absolute inset-0 opacity-[0.04]" style="background-image: repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 40px), repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 40px);"></div>
 
@@ -61,14 +62,14 @@ defineProps({
                         <!-- Live ticker -->
                         <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-8">
                             <span class="w-1.5 h-1.5 rounded-full bg-bay-400 animate-pulse"></span>
-                            <span class="font-data text-xs text-ink-400">Live monitoring across Bangladesh</span>
+                            <span class="font-data text-xs text-white/70">Live monitoring across Bangladesh</span>
                         </div>
 
                         <h1 class="font-display font-bold text-white leading-tight mb-6" style="font-size: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);">
                             Report disasters.<br>
                             <span class="text-bay-400">Help your district respond.</span>
                         </h1>
-                        <p class="text-ink-400 text-lg leading-relaxed mb-8 max-w-lg">
+                        <p class="text-white/70 text-lg leading-relaxed mb-8 max-w-lg">
                             Submit verified incident reports, track disasters on a live map, and receive emergency alerts the moment they're confirmed.
                         </p>
                         <div class="flex flex-wrap items-center gap-3">
@@ -91,22 +92,22 @@ defineProps({
 
                     <!-- Right: live stat cards -->
                     <div class="hidden lg:grid grid-cols-2 gap-4">
-                        <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
+                        <div class="bg-white/10 border border-white/20 rounded-xl p-5">
                             <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Total Reports</p>
                             <p class="font-data text-3xl font-semibold text-white">{{ stats?.total_reports ?? '—' }}</p>
                             <p class="text-gray-400 text-xs mt-1 font-data">across all districts</p>
                         </div>
-                        <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
+                        <div class="bg-white/10 border border-white/20 rounded-xl p-5">
                             <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Verified</p>
                             <p class="font-data text-3xl font-semibold text-[#2E9E6B]">{{ stats?.verified_reports ?? '—' }}</p>
                             <p class="text-gray-400 text-xs mt-1 font-data">publicly visible</p>
                         </div>
-                        <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
+                        <div class="bg-white/10 border border-white/20 rounded-xl p-5">
                             <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Districts</p>
                             <p class="font-data text-3xl font-semibold text-bay-400">64</p>
                             <p class="text-gray-400 text-xs mt-1 font-data">covered nationwide</p>
                         </div>
-                        <div class="bg-ink-800 border border-ink-600 rounded-xl p-5">
+                        <div class="bg-white/10 border border-white/20 rounded-xl p-5">
                             <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Status</p>
                             <div class="flex items-center gap-1.5 mt-1">
                                 <span class="w-2 h-2 rounded-full bg-[#2E9E6B] animate-pulse"></span>
@@ -228,19 +229,19 @@ defineProps({
         </section>
 
         <!-- Footer -->
-        <footer class="bg-ink-900 py-10">
+        <footer class="bg-gray-900 py-10">
             <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-2">
                         <div class="w-6 h-6 rounded-md bg-bay-600 flex items-center justify-center text-white text-xs font-bold font-display">S</div>
                         <span class="text-white font-display font-bold text-sm">Safenix</span>
                     </div>
-                    <p class="text-ink-300 text-xs font-data text-center">
+                    <p class="text-white/60 text-xs font-data text-center">
                         Built by Nurnahar Nuri (210147) &amp; Riazul Islam Mubin (210161) · DIIT CSE
                     </p>
                     <div class="flex items-center gap-4">
-                        <Link :href="route('map')" class="text-ink-300 hover:text-white text-xs transition-colors">Live Map</Link>
-                        <Link :href="route('news.index')" class="text-ink-300 hover:text-white text-xs transition-colors">News</Link>
+                        <Link :href="route('map')" class="text-white/60 hover:text-white text-xs transition-colors">Live Map</Link>
+                        <Link :href="route('news.index')" class="text-white/60 hover:text-white text-xs transition-colors">News</Link>
                     </div>
                 </div>
             </div>

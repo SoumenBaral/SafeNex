@@ -21,16 +21,19 @@ const typeIcon = {
     'report_approved': '✓',
     'report_rejected': '✕',
     'emergency_alert': '🚨',
+    'new_verified_report': '📋',
 };
 
-function getIcon(type) {
-    return typeIcon[type] ?? 'ℹ';
+function getIcon(n) {
+    return typeIcon[n.data?.type] ?? 'ℹ';
 }
 
-function getIconClass(type) {
+function getIconClass(n) {
+    const type = n.data?.type;
     if (type === 'report_approved') return 'bg-[#157F6B]/10 text-[#157F6B]';
     if (type === 'report_rejected') return 'bg-[#B03A4A]/10 text-[#B03A4A]';
     if (type === 'emergency_alert') return 'bg-[#D62839]/10 text-[#D62839]';
+    if (type === 'new_verified_report') return 'bg-blue-50 text-blue-600';
     return 'bg-bay-50 text-bay-600';
 }
 
@@ -99,8 +102,8 @@ export default { name: 'Notifications' };
                             ]"
                         >
                             <!-- Icon -->
-                            <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5', getIconClass(n.type)]">
-                                {{ getIcon(n.type) }}
+                            <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5', getIconClass(n)]">
+                                {{ getIcon(n) }}
                             </div>
 
                             <!-- Content -->

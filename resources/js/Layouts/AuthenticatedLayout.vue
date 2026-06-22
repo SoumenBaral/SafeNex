@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import NotificationBell from '@/Components/NotificationBell.vue';
 
 const showMobileMenu = ref(false);
+const showFlash = ref(true);
 const page = usePage();
 const roles = computed(() => page.props.auth.roles ?? []);
 const isAdmin = computed(() => roles.value.includes('admin'));
@@ -11,6 +12,9 @@ const isResponder = computed(() => roles.value.includes('responder'));
 const user = computed(() => page.props.auth.user);
 const initials = computed(() => user.value?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() ?? '?');
 const roleLabel = computed(() => isAdmin.value ? 'Admin' : isResponder.value ? 'Responder' : 'User');
+const flash = computed(() => page.props.flash);
+watch(flash, () => { showFlash.value = true; setTimeout(() => showFlash.value = false, 5000); }, { deep: true });
+
 const roleBadgeClass = computed(() => ({
     'Admin':     'bg-[#D62839]/10 text-[#D62839]',
     'Responder': 'bg-[#E5611F]/10 text-[#E5611F]',
@@ -122,6 +126,20 @@ const roleBadgeClass = computed(() => ({
                 <slot name="header" />
             </div>
         </header>
+
+        <!-- Flash messages -->
+        <div v-if="showFlash && (flash?.success || flash?.error)" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
+            <div v-if="flash?.success" class="flex items-center gap-3 bg-[#157F6B]/10 border border-[#157F6B]/30 text-[#157F6B] rounded-xl px-4 py-3 text-sm">
+                <span>✓</span>
+                <span class="flex-1">{{ flash.success }}</span>
+                <button @click="showFlash = false" class="text-[#157F6B]/60 hover:text-[#157F6B]">✕</button>
+            </div>
+            <div v-if="flash?.error" class="flex items-center gap-3 bg-[#D62839]/10 border border-[#D62839]/30 text-[#D62839] rounded-xl px-4 py-3 text-sm">
+                <span>✕</span>
+                <span class="flex-1">{{ flash.error }}</span>
+                <button @click="showFlash = false" class="text-[#D62839]/60 hover:text-[#D62839]">✕</button>
+            </div>
+        </div>
 
         <!-- Main content -->
         <main class="animate-fade-in">

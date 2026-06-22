@@ -49,6 +49,7 @@ const form = useForm({
 
 const mapLocation = ref({ lat: 23.8103, lng: 90.4125 });
 const gettingLocation = ref(false);
+const usedGps = ref(false);
 
 watch(mapLocation, (val) => {
     form.latitude  = val.lat;
@@ -57,6 +58,16 @@ watch(mapLocation, (val) => {
 
 const selectedDistrict = computed(() => props.districts?.find(d => d.id == form.district_id));
 const upazilas = computed(() => selectedDistrict.value?.upazilas ?? []);
+const selectedUpazila = computed(() => upazilas.value.find(u => u.id == form.upazila_id));
+
+// When upazila changes and user hasn't used GPS, center map on upazila
+watch(() => form.upazila_id, (id) => {
+    if (usedGps.value || !id) return;
+    const uz = upazilas.value.find(u => u.id == id);
+    if (uz?.lat && uz?.lng) {
+        mapLocation.value = { lat: +uz.lat, lng: +uz.lng };
+    }
+});
 
 function useMyLocation() {
     if (!navigator.geolocation) return;
@@ -66,6 +77,7 @@ function useMyLocation() {
             form.latitude  = pos.coords.latitude.toFixed(7);
             form.longitude = pos.coords.longitude.toFixed(7);
             mapLocation.value = { lat: +form.latitude, lng: +form.longitude };
+            usedGps.value = true;
             gettingLocation.value = false;
         },
         () => { gettingLocation.value = false; }

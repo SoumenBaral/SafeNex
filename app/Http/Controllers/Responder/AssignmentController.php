@@ -21,7 +21,7 @@ class AssignmentController extends Controller
                 'report.district:id,name',
                 'report.upazila:id,name',
                 'team:id,name',
-                'assignedBy:id,name',
+                'assignedByUser:id,name',
             ])
             ->whereHas('team.members', fn ($q) => $q->where('email', $request->user()->email))
             ->latest()

@@ -29,12 +29,27 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
+        $user = $request->user();
+
+        $shared = [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
-                'roles' => $request->user()?->getRoleNames() ?? [],
+                'user' => $user,
+                'roles' => $user?->getRoleNames() ?? [],
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
+
+        // Share admin-specific props for the AdminLayout situation bar
+        if ($user?->hasRole('admin')) {
+            $shared['pendingReportsCount'] = fn () => \App\Models\Report::where('status', 'pending')->count();
+            $shared['situationCritical'] = fn () => \App\Models\Report::where('status', 'verified')->where('severity', 'critical')->count();
+            $shared['situationHigh'] = fn () => \App\Models\Report::where('status', 'verified')->where('severity', 'high')->count();
+        }
+
+        return $shared;
     }
 }

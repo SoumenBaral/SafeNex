@@ -87,7 +87,7 @@ function updateStatus(assignment, newStatus) {
                         <div class="flex items-center gap-4 text-xs text-gray-400 font-data mb-4">
                             <span>Team: {{ a.team?.name }}</span>
                             <span>·</span>
-                            <span>By {{ a.assigned_by_user?.name ?? 'Admin' }}</span>
+                            <span>By {{ a.assigned_by?.name ?? 'Admin' }}</span>
                             <span>·</span>
                             <TimeAgo :date="a.created_at" />
                         </div>

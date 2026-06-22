@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('district_id')->constrained();
             $table->foreignId('upazila_id')->nullable()->constrained()->nullOnDelete();
             $table->string('address')->nullable();
-            $table->decimal('latitude', 10, 7);
-            $table->decimal('longitude', 10, 7);
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->enum('severity', ['low', 'medium', 'high', 'critical'])->default('medium');
             $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending')->index();
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();

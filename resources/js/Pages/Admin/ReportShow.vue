@@ -35,12 +35,12 @@ function reject() {
         <div class="space-y-6">
             <!-- Back + title -->
             <div class="flex items-center gap-3">
-                <Link :href="route('admin.reports.index')" class="text-ink-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-ink-700">
+                <Link :href="route('admin.reports.index')" class="text-gray-500 hover:text-gray-900 transition-colors p-1.5 rounded-lg hover:bg-gray-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </Link>
                 <div>
-                    <h1 class="font-display font-bold text-white text-xl">Review Report</h1>
-                    <p class="text-ink-400 text-xs font-data mt-0.5">#RPT-{{ String(report.id).padStart(4, '0') }}</p>
+                    <h1 class="font-display font-bold text-gray-900 text-xl">Review Report</h1>
+                    <p class="text-gray-500 text-xs font-data mt-0.5">#RPT-{{ String(report.id).padStart(4, '0') }}</p>
                 </div>
             </div>
 
@@ -48,11 +48,11 @@ function reject() {
                 <!-- Left: report details -->
                 <div class="space-y-5">
                     <!-- Title + badges -->
-                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-6">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                         <div class="flex items-start gap-3 mb-4">
                             <div class="flex-1 min-w-0">
-                                <h2 class="font-display font-bold text-white text-lg leading-snug">{{ report.title }}</h2>
-                                <p class="text-ink-400 text-sm mt-1 font-data">
+                                <h2 class="font-display font-bold text-gray-900 text-lg leading-snug">{{ report.title }}</h2>
+                                <p class="text-gray-500 text-sm mt-1 font-data">
                                     {{ report.district?.name }}<span v-if="report.upazila"> / {{ report.upazila.name }}</span>
                                 </p>
                             </div>
@@ -63,52 +63,52 @@ function reject() {
                         </div>
 
                         <!-- Meta grid -->
-                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-ink-700">
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
                             <div>
-                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Category</p>
-                                <p class="text-white text-sm">{{ report.category?.name ?? '—' }}</p>
+                                <p class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Category</p>
+                                <p class="text-gray-900 text-sm">{{ report.category?.name ?? '—' }}</p>
                             </div>
                             <div>
-                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Reported by</p>
-                                <p class="text-white text-sm">{{ report.user?.name }}</p>
-                                <p class="text-ink-500 text-xs font-data">{{ report.user?.email }}</p>
+                                <p class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Reported by</p>
+                                <p class="text-gray-900 text-sm">{{ report.user?.name }}</p>
+                                <p class="text-gray-400 text-xs font-data">{{ report.user?.email }}</p>
                             </div>
                             <div>
-                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Coordinates</p>
-                                <p class="text-bay-400 text-sm font-data">{{ report.latitude }}, {{ report.longitude }}</p>
+                                <p class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Coordinates</p>
+                                <p class="text-bay-600 text-sm font-data">{{ report.latitude }}, {{ report.longitude }}</p>
                             </div>
                             <div>
-                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Submitted</p>
+                                <p class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Submitted</p>
                                 <TimeAgo :date="report.created_at" />
-                                <p class="text-ink-500 text-xs font-data mt-0.5">{{ new Date(report.created_at).toLocaleString() }}</p>
+                                <p class="text-gray-400 text-xs font-data mt-0.5">{{ new Date(report.created_at).toLocaleString() }}</p>
                             </div>
                             <div v-if="report.address" class="col-span-2">
-                                <p class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-1">Address</p>
-                                <p class="text-white text-sm">{{ report.address }}</p>
+                                <p class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Address</p>
+                                <p class="text-gray-900 text-sm">{{ report.address }}</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Description -->
-                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-6">
-                        <h3 class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-3">Description</h3>
-                        <p class="text-white text-sm leading-relaxed whitespace-pre-wrap">{{ report.description }}</p>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <h3 class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-3">Description</h3>
+                        <p class="text-gray-900 text-sm leading-relaxed whitespace-pre-wrap">{{ report.description }}</p>
                     </div>
 
                     <!-- Media gallery -->
-                    <div v-if="report.media?.length" class="bg-ink-800 rounded-xl border border-ink-600 p-6">
-                        <h3 class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-4">Evidence ({{ report.media.length }} file{{ report.media.length !== 1 ? 's' : '' }})</h3>
+                    <div v-if="report.media?.length" class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <h3 class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-4">Evidence ({{ report.media.length }} file{{ report.media.length !== 1 ? 's' : '' }})</h3>
                         <div class="flex gap-3 overflow-x-auto pb-2">
                             <div v-for="m in report.media" :key="m.id" class="flex-shrink-0">
                                 <button v-if="m.type === 'image'" @click="lightboxSrc = `/storage/${m.path}`" class="block">
                                     <img
                                         :src="`/storage/${m.thumbnail_path || m.path}`"
-                                        class="w-36 h-28 rounded-lg object-cover ring-1 ring-ink-600 hover:ring-bay-500 transition-all"
+                                        class="w-36 h-28 rounded-lg object-cover ring-1 ring-gray-200 hover:ring-bay-500 transition-all"
                                         alt="Report evidence"
                                     />
                                 </button>
                                 <video v-else :src="`/storage/${m.path}`" controls
-                                    class="w-36 h-28 rounded-lg object-cover bg-ink-900 ring-1 ring-ink-600"/>
+                                    class="w-36 h-28 rounded-lg object-cover bg-gray-50 ring-1 ring-gray-200"/>
                             </div>
                         </div>
                     </div>
@@ -116,13 +116,13 @@ function reject() {
                     <!-- Rejection reason (if rejected) -->
                     <div v-if="report.rejection_reason" class="bg-[#B03A4A]/10 border border-[#B03A4A]/30 rounded-xl p-5">
                         <h3 class="text-[#B03A4A] text-xs font-semibold uppercase tracking-wider mb-2">Rejection reason</h3>
-                        <p class="text-white/80 text-sm">{{ report.rejection_reason }}</p>
+                        <p class="text-gray-700 text-sm">{{ report.rejection_reason }}</p>
                     </div>
 
                     <!-- Verified info -->
                     <div v-if="report.verified_by_user" class="bg-[#157F6B]/10 border border-[#157F6B]/30 rounded-xl p-5">
                         <h3 class="text-[#157F6B] text-xs font-semibold uppercase tracking-wider mb-2">Verified</h3>
-                        <p class="text-white/80 text-sm">
+                        <p class="text-gray-700 text-sm">
                             By {{ report.verified_by_user.name }} · {{ new Date(report.verified_at).toLocaleString() }}
                         </p>
                     </div>
@@ -131,9 +131,9 @@ function reject() {
                 <!-- Right: action panel (sticky) -->
                 <div class="space-y-4">
                     <!-- Inline reject panel -->
-                    <div v-if="showRejectPanel && report.status === 'pending'" class="bg-ink-800 rounded-xl border border-[#B03A4A]/40 p-5 space-y-4">
-                        <h3 class="font-display font-semibold text-white text-sm">Reject report</h3>
-                        <p class="text-ink-400 text-xs">The reporter will be notified with your reason.</p>
+                    <div v-if="showRejectPanel && report.status === 'pending'" class="bg-white rounded-xl border border-[#B03A4A]/40 shadow-sm p-5 space-y-4">
+                        <h3 class="font-display font-semibold text-gray-900 text-sm">Reject report</h3>
+                        <p class="text-gray-500 text-xs">The reporter will be notified with your reason.</p>
 
                         <!-- Quick-pick chips -->
                         <div class="flex flex-wrap gap-2">
@@ -144,7 +144,7 @@ function reject() {
                                     'text-xs px-3 py-1.5 rounded-full border transition-colors',
                                     rejectForm.rejection_reason === r
                                         ? 'bg-[#B03A4A] border-[#B03A4A] text-white'
-                                        : 'border-ink-600 text-ink-400 hover:text-white hover:border-ink-500',
+                                        : 'border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300',
                                 ]"
                             >{{ r }}</button>
                         </div>
@@ -153,13 +153,13 @@ function reject() {
                             v-model="rejectForm.rejection_reason"
                             rows="3"
                             placeholder="Or type a custom reason…"
-                            class="w-full bg-ink-900 border border-ink-600 rounded-lg text-white text-sm px-3 py-2 placeholder-ink-500 focus:border-bay-500 focus:ring-0 resize-none"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm px-3 py-2 placeholder-gray-400 focus:border-bay-500 focus:ring-0 resize-none"
                         ></textarea>
                         <p v-if="rejectForm.errors.rejection_reason" class="text-[#D62839] text-xs">{{ rejectForm.errors.rejection_reason }}</p>
 
                         <div class="flex gap-2">
                             <button @click="showRejectPanel = false; rejectForm.reset()"
-                                class="flex-1 text-sm font-medium text-ink-400 hover:text-white border border-ink-600 px-3 py-2 rounded-lg transition-colors">
+                                class="flex-1 text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-200 px-3 py-2 rounded-lg transition-colors">
                                 Cancel
                             </button>
                             <button @click="reject" :disabled="rejectForm.processing || !rejectForm.rejection_reason"
@@ -170,8 +170,8 @@ function reject() {
                     </div>
 
                     <!-- Primary action buttons -->
-                    <div v-if="report.status === 'pending'" class="bg-ink-800 rounded-xl border border-ink-600 p-5 space-y-3">
-                        <h3 class="font-display font-semibold text-white text-sm mb-1">Review actions</h3>
+                    <div v-if="report.status === 'pending'" class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
+                        <h3 class="font-display font-semibold text-gray-900 text-sm mb-1">Review actions</h3>
                         <button @click="showVerifyModal = true"
                             class="w-full flex items-center justify-center gap-2 bg-[#157F6B] hover:bg-[#2E9E6B] text-white font-semibold py-3 rounded-xl transition-colors text-sm">
                             ✓ Verify report
@@ -183,28 +183,28 @@ function reject() {
                     </div>
 
                     <!-- Post-verify actions -->
-                    <div v-if="report.status === 'verified'" class="bg-ink-800 rounded-xl border border-ink-600 p-5 space-y-3">
-                        <h3 class="font-display font-semibold text-white text-sm mb-1">Next steps</h3>
+                    <div v-if="report.status === 'verified'" class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
+                        <h3 class="font-display font-semibold text-gray-900 text-sm mb-1">Next steps</h3>
                         <Link :href="route('admin.assignments.create', report.id)"
                             class="w-full flex items-center justify-center gap-2 bg-bay-600 hover:bg-bay-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
                             🚑 Assign rescue team
                         </Link>
                         <Link :href="route('admin.news.create', { from_report: report.id })"
-                            class="w-full flex items-center justify-center gap-2 border border-ink-600 hover:bg-ink-700 text-white font-medium py-3 rounded-xl transition-colors text-sm">
+                            class="w-full flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-100 text-gray-900 font-medium py-3 rounded-xl transition-colors text-sm">
                             📰 Convert to article
                         </Link>
                     </div>
 
                     <!-- Reporter card -->
-                    <div class="bg-ink-800 rounded-xl border border-ink-600 p-5">
-                        <h3 class="text-ink-400 text-xs font-medium uppercase tracking-wider mb-3">Reporter</h3>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                        <h3 class="text-gray-500 text-xs font-medium uppercase tracking-wider mb-3">Reporter</h3>
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-full bg-bay-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                                 {{ report.user?.name?.charAt(0)?.toUpperCase() }}
                             </div>
                             <div>
-                                <p class="text-white text-sm font-medium">{{ report.user?.name }}</p>
-                                <p class="text-ink-400 text-xs font-data">{{ report.user?.email }}</p>
+                                <p class="text-gray-900 text-sm font-medium">{{ report.user?.name }}</p>
+                                <p class="text-gray-500 text-xs font-data">{{ report.user?.email }}</p>
                             </div>
                         </div>
                     </div>

@@ -46,7 +46,7 @@ class Report extends Model
         return $this->belongsTo(Upazila::class);
     }
 
-    public function verifiedBy(): BelongsTo
+    public function verifiedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
     }

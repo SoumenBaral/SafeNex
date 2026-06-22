@@ -28,12 +28,13 @@ class ReportController extends Controller
         return Inertia::render('Admin/Reports', [
             'reports' => $reports,
             'currentStatus' => $status,
+            'pendingCount' => Report::where('status', 'pending')->count(),
         ]);
     }
 
     public function show(Report $report): Response
     {
-        $report->load('user:id,name,email,phone', 'category', 'district', 'upazila', 'media', 'verifiedBy:id,name');
+        $report->load('user:id,name,email,phone', 'category', 'district', 'upazila', 'media', 'verifiedByUser:id,name');
 
         return Inertia::render('Admin/ReportShow', [
             'report' => $report,

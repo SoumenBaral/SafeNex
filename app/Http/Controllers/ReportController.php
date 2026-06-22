@@ -23,7 +23,7 @@ class ReportController extends Controller
         return Inertia::render('User/ReportCreate', [
             'categories' => Category::select('id', 'name', 'slug')->orderBy('name')->get(),
             'districts'  => District::select('id', 'name', 'name_bn')
-                ->with('upazilas:id,district_id,name,name_bn')
+                ->with('upazilas:id,district_id,name,name_bn,lat,lng')
                 ->orderBy('name')
                 ->get(),
         ]);
