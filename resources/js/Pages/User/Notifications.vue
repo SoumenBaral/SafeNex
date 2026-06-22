@@ -22,6 +22,7 @@ const typeIcon = {
     'report_rejected': '✕',
     'emergency_alert': '🚨',
     'new_verified_report': '📋',
+    'news_published': '📰',
 };
 
 function getIcon(n) {
@@ -34,6 +35,7 @@ function getIconClass(n) {
     if (type === 'report_rejected') return 'bg-[#B03A4A]/10 text-[#B03A4A]';
     if (type === 'emergency_alert') return 'bg-[#D62839]/10 text-[#D62839]';
     if (type === 'new_verified_report') return 'bg-blue-50 text-blue-600';
+    if (type === 'news_published') return 'bg-purple-50 text-purple-600';
     return 'bg-bay-50 text-bay-600';
 }
 

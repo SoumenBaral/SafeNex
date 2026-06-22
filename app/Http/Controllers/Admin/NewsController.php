@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\District;
 use App\Models\NewsArticle;
 use App\Models\Report;
+use App\Models\User;
+use App\Notifications\NewNewsPublished;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -79,7 +81,7 @@ class NewsController extends Controller
             $coverPath = $request->input('existing_cover');
         }
 
-        NewsArticle::create([
+        $article = NewsArticle::create([
             'author_id' => $request->user()->id,
             'title' => $validated['title'],
             'slug' => $slug,
@@ -92,6 +94,14 @@ class NewsController extends Controller
             'status' => $validated['status'],
             'published_at' => $validated['status'] === 'published' ? now() : null,
         ]);
+
+        // Notify all users when news is published
+        if ($article->status === 'published') {
+            $article->load('district');
+            User::where('status', 'active')
+                ->where('id', '!=', $request->user()->id)
+                ->each(fn (User $u) => $u->notify(new NewNewsPublished($article)));
+        }
 
         return redirect()->route('admin.news.index')->with('success', 'Article created.');
     }
@@ -123,11 +133,21 @@ class NewsController extends Controller
             unset($validated['cover_image']);
         }
 
+        $wasPublished = $article->status === 'published';
+
         if ($validated['status'] === 'published' && !$article->published_at) {
             $validated['published_at'] = now();
         }
 
         $article->update($validated);
+
+        // Notify users when a draft is published for the first time
+        if (!$wasPublished && $article->status === 'published') {
+            $article->load('district');
+            User::where('status', 'active')
+                ->where('id', '!=', $request->user()->id)
+                ->each(fn (User $u) => $u->notify(new NewNewsPublished($article)));
+        }
 
         return redirect()->route('admin.news.index')->with('success', 'Article updated.');
     }

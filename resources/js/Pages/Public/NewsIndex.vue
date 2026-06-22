@@ -100,7 +100,7 @@ function isBreaking(dateStr) {
                 <Link v-if="heroArticle" :href="route('news.show', heroArticle.slug)"
                     class="group block rounded-2xl overflow-hidden bg-white border border-line shadow-card hover:shadow-lift transition-all mb-8 relative"
                 >
-                    <div class="relative h-64 sm:h-80 bg-ink-800 overflow-hidden">
+                    <div class="relative h-64 sm:h-80 bg-gray-900 overflow-hidden">
                         <img v-if="heroArticle.cover_image"
                             :src="`/storage/${heroArticle.cover_image}`"
                             :alt="heroArticle.title"
@@ -136,7 +136,7 @@ function isBreaking(dateStr) {
                                 :alt="article.title"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                             />
-                            <div v-else class="w-full h-full flex items-center justify-center text-4xl bg-ink-900/5">📰</div>
+                            <div v-else class="w-full h-full flex items-center justify-center text-4xl bg-gray-100">📰</div>
                             <span v-if="isBreaking(article.published_at)"
                                 class="absolute top-3 left-3 bg-[#D62839] text-white text-xs font-bold px-2 py-0.5 rounded-full">
                                 BREAKING
